@@ -1,0 +1,23 @@
+digraph G {
+  subgraph clustersecret {
+    labeljust=l;
+    labelloc=t;
+    color=black;
+    label="Internal PRNG state";
+
+    rank=same {
+      "seed" [shape=circle];
+      "…" [shape=none];
+
+      node [shape=rect];
+      "seed" -> "state₁" -> "state₂" -> "state₃" -> "…";
+    }
+  }
+
+  subgraph public {
+    node [shape=circle];
+    "state₁" -> "out₁";
+    "state₂" -> "out₂";
+    "state₃" -> "out₃";
+  }
+}

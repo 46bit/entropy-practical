@@ -1,0 +1,42 @@
+---
+* Unpredictable behaviour is important in many contexts: security, simulations, games. Random numbers tend to be how we achieve this.
+* Computers are intended as quite structured machines rather than random. As such we use algorithms whose output looks random: PRNGs. (A diagram or two to illustrate.)
+* What properties define randomness? Various pictures will help here, as will references for the interested.
+* Show you can attack systems not using non-cryptographically-secure PRNGs. I was thinking a CAPTCHA but perhaps something like a toy TCP network would work better. Either way this ought to be a small contained example, as with your exercises.
+* Learn about the advantages (hard to predict) and disadvantages (computational effort?) of typical CSPRNGs.
+* Learn about seeding. Show how a CSPRNG with poor seeding is attackable. I'm thinking of revising the slot machine demo I showed at interview, where it gets seeded with something like the current time.
+
+* From rewriting my Mersenne Twister toolkit in Python this afternoon, I'm not sure we can expect people to convert its output to internal state from scratch in the time available. As such I'm thinking that can be the extra exercise, and students will use premade functions to carry out the first attack.
+---
+
+---
+The list seems to have different things in it:
+- introductory (...unpredictable behavior is important)
+- objective/learning outcome (...advantages & disadvantaegs of..)
+- experiment (... show how poor seeding...)
+
+So the first job might be to separate out into 3 lists.
+
+The original objective was to
+- show that designing cryptographic algorithms is easy to get wrong (i.e. don't do this at home)
+  (random generators should be fairly simple way to do this?)
+- show that poor use of a good algorithm renders it vulnerable (eg seeding)
+---
+
+---
+* Introductory
+  * Unpredictable behaviour is important in many contexts: security, simulations, games. Random numbers tend to be how we achieve this.
+  * Computers are intended as quite structured machines rather than random. As such we use algorithms whose output looks random: PRNGs. (A diagram or two to illustrate.)
+  * What properties define randomness? Various pictures will help here, as will references for the interested.
+  * Learn about the advantages (hard to predict) and disadvantages (computational effort?) of typical CSPRNGs.
+
+* Objectives
+  * Show you can attack systems not using non-cryptographically-secure PRNGs. I was thinking a CAPTCHA but perhaps something like a toy TCP network would work better. Either way this ought to be a small contained example, as with your exercises.
+  * Learn about seeding. Show how a CSPRNG with poor seeding is attackable. I'm thinking of revising the slot machine demo I showed at interview, where it gets seeded with something like the current time.
+
+* Experiment
+  * Show how an insecure PRNG can compomise a system.
+  * Show how to attack a system using a poorly-seeded CSPRNG.
+---
+
+Requirements on random number generators vary. For games it can be enough that the distribution "looks random." They happen in real-time and generally there's no reward for predicting what will happen next. However in cryptosystems like key generation and TCP packet numbering, an attacker must not be able to predict outputs. If an attacker can guess your encryption keys you have a problem - one you may well never know about. If an attacker can predict your TCP packet numbers then they can insert data into your connections, injecting bad data into your database or
