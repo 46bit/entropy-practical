@@ -48,22 +48,25 @@ NumbersNoiseCoordlot.prototype.drawNumbers = function drawNumbers() {
 
   for (var i = 0; i + 1 < _self.numbers.length; i += 2) {
     var proportion = parseFloat(i) / _self.numbers.length
-    var colourmap_entry_index = parseInt(Math.floor(proportion * numbers_colourmap.length)),
+    var colourmap_entry_index = numbers_colourmap.length - 1 - parseInt(Math.floor(proportion * numbers_colourmap.length)),
         colourmap_entry = numbers_colourmap[colourmap_entry_index]
+    colourmap_entry = [parseInt(Math.floor(proportion * 255)), parseInt(Math.floor(proportion * 255)), parseInt(Math.floor(proportion * 255))]
     d[0] = parseInt(Math.round(colourmap_entry[0] * 255))
     d[1] = parseInt(Math.round(colourmap_entry[1] * 255))
     d[2] = parseInt(Math.round(colourmap_entry[2] * 255))
     var x = _self.numbers[i] % _self.width,
         y = _self.numbers[i+1] % _self.height
-    if (_self.maxNumber < _self.width) {
-      var scale = parseFloat(_self.width) / _self.maxNumber
-      x =parseInt(Math.floor( _self.numbers[i] * scale))
+
+    if (_self.maxNumber < _self.width || _self.maxNumber < _self.height) {
+      var scale = Math.max(parseFloat(_self.width) / _self.maxNumber, parseFloat(_self.height) / _self.maxNumber)
+      for (x = _self.numbers[i] * scale - 0.5 * scale; x < _self.numbers[i] * scale + 0.5 * scale; x++) {
+        for (y = _self.numbers[i+1] * scale - 0.5 * scale; y < _self.numbers[i+1] * scale + 0.5 * scale; y++) {
+          _self.context.putImageData(p, x, y + 25)
+        }
+      }
+    } else {
+      _self.context.putImageData(p, x, y + 25)
     }
-    if (_self.maxNumber < _self.height) {
-      var scale = parseFloat(_self.height) / _self.maxNumber
-      y = parseInt(Math.floor(_self.numbers[i+1] * scale))
-    }
-    _self.context.putImageData(p, x, y + 25)
   }
 
   _self.context.textBaseline = "top"
