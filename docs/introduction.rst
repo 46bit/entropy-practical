@@ -86,11 +86,14 @@ A reasonable quality PRNG should show limited patterns from visualising its outp
          <canvas class="numbers-noise-coord-plot" id="numbers-noise-coord-prime-digits" width="200" height="225" data-plot-name="Prime numbers mod 10" data-numbers-path="_static/numbers/65536-prime-digits.txt"></canvas>
          <canvas class="numbers-noise-coord-plot" id="numbers-noise-coord-python-systemrandom" width=200" height="225" data-plot-name="High-quality PRNG" data-numbers-path="_static/numbers/65536-python-systemrandom.txt"></canvas>
 
-   Primes show a quite beautiful pattern, but that's more of a matter for Number Theorists. Our primes mod 10 aren't at all like the high-quality PRNG. Why?
+   Primes came out quite pretty, but we're not doing Number Theory. Our primes mod 10 look far more
+   structured than in the previous plot. Why?
 
-   No prime >10 ends with 5. Thus the only 4 digits that can be output are 1, 3, 7 and 9. Each of these
-   digits is theorised to be mapped to each other quite evenly [@TODO: try to distill down the number
-   theory, or skip?] but there remains only a few output values.
+   * Limited output range.
+      * Once past 10, primes mod 10 can only end with 1, 3, 7 or 9.
+      * Each column corresponds to a prime being followed by a prime ending with 1, 3, 7 or 9.
+      * The grey boxes indicate the opening (2, 3), (3, 5) and (5, 7) pairs.
+   * The various occupied mappings besides those <10 do look to happen evenly. Number Theorists `actively research this <http://www.nature.com/news/peculiar-pattern-found-in-random-prime-numbers-1.19550>`_.
 
 _______________________________
 Pseudo-Random Number Generators
