@@ -3,7 +3,7 @@ digraph G {
     labeljust=l;
     labelloc=t;
     color=black;
-    label="Internal PRNG state";
+    label="Secret state";
 
     rank=same {
       "seed" [shape=circle];
