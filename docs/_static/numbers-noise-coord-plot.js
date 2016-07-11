@@ -13,6 +13,7 @@ function NumbersNoiseCoordlot(canvas_id) {
 
   _self.$canvas.css("border-width", "1px")
   _self.$canvas.css("border-color", "black")
+  _self.$canvas.css("background", "black")
 
   _self.plot_name = _self.$canvas.attr("data-plot-name")
   _self.numbers_path = _self.$canvas.attr("data-numbers-path")
@@ -53,7 +54,8 @@ NumbersNoiseCoordlot.prototype.drawNumbers = function drawNumbers() {
     d[1] = parseInt(Math.round(colourmap_entry[1] * 255))
     d[2] = parseInt(Math.round(colourmap_entry[2] * 255))
     var x = _self.numbers[i] % _self.width,
-        y = _self.numbers[i+1] % _self.width
+        y = _self.numbers[i+1] % _self.height
+    if (i % 100 == 0 && _self.plot_name == "RANDU") console.log(x, y, d[0])
     _self.context.putImageData(p, x, y)
   }
 
