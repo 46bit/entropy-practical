@@ -67,8 +67,8 @@ A reasonable quality PRNG should show limited patterns from visualising its outp
    .. raw:: html
 
          <canvas class="numbers-noise-plot" id="numbers-noise-primes" width=200" height="225" data-plot-name="Prime numbers" data-numbers-path="_static/numbers/65536-primes.txt" style="display: inline-block;"></canvas>
-         <canvas class="numbers-noise-plot" id="numbers-noise-prime-digits" width=200" height="225" data-plot-name="Prime numbers mod 10" data-numbers-path="_static/numbers/65536-prime-digits.txt" style="display: inline-block;"></canvas>
-         <canvas class="numbers-noise-plot" id="numbers-noise-python-systemrandom" width=200" height="225" data-plot-name="High-quality PRNG" data-numbers-path="_static/numbers/65536-python-systemrandom.txt"></canvas>
+         <canvas class="numbers-noise-plot" id="numbers-noise-prime-digits" width=200" height="225" data-plot-name="Primes mod 10" data-numbers-path="_static/numbers/65536-prime-digits.txt" style="display: inline-block;"></canvas>
+         <canvas class="numbers-noise-plot" id="numbers-noise-python-systemrandom" width=200" height="225" data-plot-name="High-quality PRNG (Yarrow)" data-numbers-path="_static/numbers/65536-python-systemrandom.txt"></canvas>
 
    The sequence of primes gets larger over time, so as their values increase the chart gets darker, but
    the primes mod 10 do look quite like we might hope.
@@ -83,8 +83,8 @@ A reasonable quality PRNG should show limited patterns from visualising its outp
    .. raw:: html
 
          <canvas class="numbers-noise-coord-plot" id="numbers-noise-coord-primes" width="200" height="225" data-plot-name="Prime numbers" data-numbers-path="_static/numbers/65536-primes.txt"></canvas>
-         <canvas class="numbers-noise-coord-plot" id="numbers-noise-coord-prime-digits" width="200" height="225" data-plot-name="Prime numbers mod 10" data-numbers-path="_static/numbers/65536-prime-digits.txt"></canvas>
-         <canvas class="numbers-noise-coord-plot" id="numbers-noise-coord-python-systemrandom" width=200" height="225" data-plot-name="High-quality PRNG" data-numbers-path="_static/numbers/65536-python-systemrandom.txt"></canvas>
+         <canvas class="numbers-noise-coord-plot" id="numbers-noise-coord-prime-digits" width="200" height="225" data-plot-name="Primes mod 10" data-numbers-path="_static/numbers/65536-prime-digits.txt"></canvas>
+         <canvas class="numbers-noise-coord-plot" id="numbers-noise-coord-python-systemrandom" width=200" height="225" data-plot-name="High-quality PRNG (Yarrow)" data-numbers-path="_static/numbers/65536-python-systemrandom.txt"></canvas>
 
    Primes came out quite pretty, but we're not doing Number Theory. Our primes mod 10 look far more
    structured than in the previous plot. Why?
@@ -139,32 +139,6 @@ Coordinate plots (x, y) = (output i, output i+1):
    <canvas class="numbers-noise-coord-plot" id="numbers-noise-coord-randu" width="200" height="225" data-plot-name="RANDU" data-numbers-path="_static/numbers/65536-randu.txt"></canvas>
    <canvas class="numbers-noise-coord-plot" id="numbers-noise-coord-python-random-mersenne" width="200" height="225" data-plot-name="Python random (Mersenne)" data-numbers-path="_static/numbers/65536-python-random-mersenne.txt"></canvas>
    <canvas class="numbers-noise-coord-plot" id="numbers-noise-coord-python-systemrandom" width="200" height="225" data-plot-name="/dev/urandom (Mac, Yarrow)" data-numbers-path="_static/numbers/65536-python-systemrandom.txt"></canvas>
-
-3D phase space (delayed coordinate) plots:
-
-.. raw:: html
-
-   <!--<div class="numbers-phase-space-plot" id="numbers-phase-space-prime-digits" style="width: 400px; height: 200px;" data-plot-name="Prime numbers mod 10" data-numbers-path="_static/numbers/65536-prime-digits.txt"></div>
-   <div class="numbers-phase-space-plot" id="numbers-phase-space-primes" style="width: 400px; height: 200px;" data-plot-name="Prime numbers" data-numbers-path="_static/numbers/65536-primes.txt"></div>
-   <div class="numbers-phase-space-plot" id="numbers-phase-space-lcg" style="width: 400px; height: 200px;" data-plot-name="LCG" data-numbers-path="_static/numbers/65536-lcg.txt"></div>
-   <div class="numbers-phase-space-plot" id="numbers-phase-space-lcg-prime" style="width: 400px; height: 200px;" data-plot-name="LCG with Prime params" data-numbers-path="_static/numbers/65536-lcg-prime.txt"></div>-->
-   <div class="numbers-phase-space-plot" id="numbers-phase-space-lcg-prime" style="width: 400px; height: 400px;" data-plot-name="RANDU" data-numbers-path="_static/numbers/65536-randu.txt"></div>
-   <!--<div class="numbers-phase-space-plot" id="numbers-phase-space-python-random-mersenne" style="width: 400px; height: 200px;" data-plot-name="Python random (Mersenne)" data-numbers-path="_static/numbers/65536-python-random-mersenne.txt"></div>
-   <div class="numbers-phase-space-plot" id="numbers-phase-space-python-systemrandom" style="width: 400px; height: 200px;" data-plot-name="/dev/urandom (Mac, Yarrow)" data-numbers-path="_static/numbers/65536-python-systemrandom.txt"></div>-->
-
-Coordinate plots (x, y, z) = (output i, output i+1, output i+2):
-
-.. raw:: html
-
-   <!--<div class="numbers-xyz-plot" id="numbers-xyz-prime-digits" style="width: 400px; height: 200px;" data-plot-name="Prime numbers mod 10" data-numbers-path="_static/numbers/65536-prime-digits.txt"></div>
-   <div class="numbers-xyz-plot" id="numbers-xyz-naturals" style="width: 400px; height: 200px;" data-plot-name="Natural numbers" data-numbers-path="_static/numbers/65536-naturals.txt"></div>
-   <div class="numbers-xyz-plot" id="numbers-xyz-primes" style="width: 400px; height: 200px;" data-plot-name="Prime numbers" data-numbers-path="_static/numbers/65536-primes.txt"></div>
-   <div class="numbers-xyz-plot" id="numbers-xyz-lcg" style="width: 400px; height: 200px;" data-plot-name="LCG" data-numbers-path="_static/numbers/65536-lcg.txt"></div>
-   <div class="numbers-xyz-plot" id="numbers-xyz-lcg-prime" style="width: 400px; height: 200px;" data-plot-name="LCG with Prime params" data-numbers-path="_static/numbers/65536-lcg-prime.txt"></div>
-   <div class="numbers-xyz-plot" id="numbers-xyz-python-random-mersenne" style="width: 400px; height: 200px;" data-plot-name="Python random (Mersenne)" data-numbers-path="_static/numbers/65536-python-random-mersenne.txt"></div>
-   <div class="numbers-xyz-plot" id="numbers-xyz-python-systemrandom" style="width: 400px; height: 200px;" data-plot-name="/dev/urandom (Mac, Yarrow)" data-numbers-path="_static/numbers/65536-python-systemrandom.txt"></div>
-   <div class="numbers-xyz-plot" id="numbers-xyz-python-random-multiseed" style="width: 400px; height: 200px;" data-plot-name="Python multiseed 0th output (Mersenne)" data-numbers-path="_static/numbers/65536-python-random-multiseed.txt"></div>
-   <div class="numbers-xyz-plot" id="numbers-xyz-randu" style="width: 400px; height: 400px;" data-plot-name="RANDU" data-numbers-path="_static/numbers/65536-randu.txt"></div>-->
 
 It is important to remember that PRNG outputs are related. The algorithm's internal state is
 generating each number, and while the output routine might obfuscate the relation it still did arise

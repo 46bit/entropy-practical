@@ -60,13 +60,13 @@ NumbersNoisePlot.prototype.drawNumbers = function drawNumbers() {
   }
 
   _self.context.textBaseline = "top"
-  _self.context.textAlign = "left"
-  _self.context.font = "bold 13px Helvetica"
+  _self.context.textAlign = "center"
+  _self.context.font = "bold 13px sans-serif"
 
   _self.context.fillStyle = "rgb(255, 255, 255)"
   _self.context.fillRect(0, 0, _self.width, 25)
   _self.context.fillStyle = "rgb(0, 0, 0)"
-  _self.context.fillText(_self.plot_name, 15, 5)
+  _self.context.fillText(_self.plot_name, _self.width / 2, 5)
 }
 
 jQuery(document).ready(function () {

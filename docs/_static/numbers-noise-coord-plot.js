@@ -33,6 +33,11 @@ NumbersNoiseCoordlot.prototype.processNumberDump = function processNumberDump(nu
     _self.numbers.push(parseInt(number_str))
   }
   _self.maxNumber = Math.max.apply(null, _self.numbers)
+
+  _self.scale = Math.max(1.0, Math.max(
+    parseFloat(_self.width) / _self.maxNumber,
+    parseFloat(_self.height) / _self.maxNumber
+  ))
 }
 
 NumbersNoiseCoordlot.prototype.drawNumbers = function drawNumbers() {
@@ -47,29 +52,29 @@ NumbersNoiseCoordlot.prototype.drawNumbers = function drawNumbers() {
   for (var i = 0; i + 1 < _self.numbers.length; i++) {
     var proportion = parseFloat(i) / _self.numbers.length
     d[0] = d[1] = d[2] = 255 - (55 + parseInt(Math.round(proportion * 200)))
-    var x = _self.numbers[i] % _self.width,
-        y = _self.numbers[i+1] % _self.height
+    var x = (_self.numbers[i] % _self.width) * _self.scale,
+        y = (_self.numbers[i+1] % _self.height) * _self.scale,
+        dx, dy
 
-    if (_self.maxNumber < _self.width || _self.maxNumber < _self.height) {
-      var scale = Math.max(parseFloat(_self.width) / _self.maxNumber, parseFloat(_self.height) / _self.maxNumber)
-      for (x = _self.numbers[i] * scale - 0.5 * scale; x < _self.numbers[i] * scale + 0.5 * scale; x++) {
-        for (y = _self.numbers[i+1] * scale - 0.5 * scale; y < _self.numbers[i+1] * scale + 0.5 * scale; y++) {
-          _self.context.putImageData(p, x, y + 25)
-        }
+    for (dx = 0; dx < _self.scale; dx++) {
+      for (dy = 0; dy < _self.scale; dy++) {
+        _self.context.putImageData(p, parseInt(Math.round(x + dx)), parseInt(Math.round(y + dy)) + 25)
       }
-    } else {
-      _self.context.putImageData(p, x, y + 25)
     }
   }
 
   _self.context.textBaseline = "top"
-  _self.context.textAlign = "left"
-  _self.context.font = "bold 13px Helvetica"
+  _self.context.textAlign = "center"
+  _self.context.font = "bold 13px sans-serif"
 
   _self.context.fillStyle = "rgb(255, 255, 255)"
   _self.context.fillRect(0, 0, _self.width, 25)
   _self.context.fillStyle = "rgb(0, 0, 0)"
-  _self.context.fillText(_self.plot_name, 15, 5)
+  var plot_name_out = _self.plot_name
+  if (_self.scale > 1.1) {
+    plot_name_out += " (rescaled)"
+  }
+  _self.context.fillText(plot_name_out, _self.width / 2, 5)
 }
 
 jQuery(document).ready(function () {
