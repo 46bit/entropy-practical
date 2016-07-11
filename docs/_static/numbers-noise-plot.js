@@ -11,8 +11,7 @@ function NumbersNoisePlot(canvas_id) {
   _self.height = _self.canvas.height - 25
   _self.numberCapacity = _self.width * _self.height
 
-  _self.$canvas.css("border-width", "1px")
-  _self.$canvas.css("border-color", "black")
+  _self.$canvas.css("background", "white")
 
   _self.plot_name = _self.$canvas.attr("data-plot-name")
   _self.numbers_path = _self.$canvas.attr("data-numbers-path")
