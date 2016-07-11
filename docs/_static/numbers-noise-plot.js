@@ -8,12 +8,13 @@ function NumbersNoisePlot(canvas_id) {
   _self.context = _self.canvas.getContext("2d")
 
   _self.width = _self.canvas.width
-  _self.height = _self.canvas.height
+  _self.height = _self.canvas.height - 25
   _self.numberCapacity = _self.width * _self.height
 
   _self.$canvas.css("border-width", "1px")
   _self.$canvas.css("border-color", "black")
 
+  _self.plot_name = _self.$canvas.attr("data-plot-name")
   _self.numbers_path = _self.$canvas.attr("data-numbers-path")
   jQuery.get(_self.numbers_path, function(number_dump) {
     _self.processNumberDump(number_dump)
@@ -49,14 +50,24 @@ NumbersNoisePlot.prototype.drawNumbers = function drawNumbers() {
     for (var x = 0; x < _self.width; x++) {
       var brightness = 255 - parseInt(Math.round(255 * (_self.numbers[i] / _self.maxNumber)))
       d[0] = d[1] = d[2] = brightness
-      _self.context.putImageData(p, x, y)
+      _self.context.putImageData(p, x, y + 25)
       i++
       if (i >= _self.numbers.length) {
-        return
+        y = _self.height
+        x = _self.width
+        break
       }
     }
   }
 
+  _self.context.textBaseline = "top"
+  _self.context.textAlign = "left"
+  _self.context.font = "bold 13px Helvetica"
+
+  _self.context.fillStyle = "rgb(255, 255, 255)"
+  _self.context.fillRect(0, 0, _self.width, 25)
+  _self.context.fillStyle = "rgb(0, 0, 0)"
+  _self.context.fillText(_self.plot_name, 15, 5)
 }
 
 jQuery(document).ready(function () {

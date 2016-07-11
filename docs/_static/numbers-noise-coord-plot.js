@@ -8,7 +8,7 @@ function NumbersNoiseCoordlot(canvas_id) {
   _self.context = _self.canvas.getContext("2d")
 
   _self.width = _self.canvas.width
-  _self.height = _self.canvas.height
+  _self.height = _self.canvas.height - 25
   _self.numberCapacity = _self.width * _self.height
 
   _self.$canvas.css("border-width", "1px")
@@ -46,17 +46,24 @@ NumbersNoiseCoordlot.prototype.drawNumbers = function drawNumbers() {
       d = p.data
   d[3] = 255
 
-  for (var i = 0; i < _self.numbers.length; i += 2) {
-    var colourmap_entry_index = parseInt(Math.floor((parseFloat(i) / _self.numbers.length) * numbers_colourmap.length)),
+  for (var i = 0; i + 1 < _self.numbers.length; i += 2) {
+    var proportion = parseFloat(i) / _self.numbers.length
+    var colourmap_entry_index = parseInt(Math.floor(proportion * numbers_colourmap.length)),
         colourmap_entry = numbers_colourmap[colourmap_entry_index]
-    //console.log("colourmap_entry", colourmap_entry_index, colourmap_entry)
     d[0] = parseInt(Math.round(colourmap_entry[0] * 255))
     d[1] = parseInt(Math.round(colourmap_entry[1] * 255))
     d[2] = parseInt(Math.round(colourmap_entry[2] * 255))
     var x = _self.numbers[i] % _self.width,
         y = _self.numbers[i+1] % _self.height
-    if (i % 100 == 0 && _self.plot_name == "RANDU") console.log(x, y, d[0])
-    _self.context.putImageData(p, x, y)
+    if (_self.maxNumber < _self.width) {
+      var scale = parseFloat(_self.width) / _self.maxNumber
+      x =parseInt(Math.floor( _self.numbers[i] * scale))
+    }
+    if (_self.maxNumber < _self.height) {
+      var scale = parseFloat(_self.height) / _self.maxNumber
+      y = parseInt(Math.floor(_self.numbers[i+1] * scale))
+    }
+    _self.context.putImageData(p, x, y + 25)
   }
 
   _self.context.textBaseline = "top"
@@ -64,7 +71,7 @@ NumbersNoiseCoordlot.prototype.drawNumbers = function drawNumbers() {
   _self.context.font = "bold 13px Helvetica"
 
   _self.context.fillStyle = "rgb(255, 255, 255)"
-  _self.context.fillRect(0, 0, _self.width, 30)
+  _self.context.fillRect(0, 0, _self.width, 25)
   _self.context.fillStyle = "rgb(0, 0, 0)"
   _self.context.fillText(_self.plot_name, 15, 5)
 }
