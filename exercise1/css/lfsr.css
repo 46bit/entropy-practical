@@ -96,6 +96,8 @@ marker#arrowhead {
 }
 .lfsr .fore_space .bit .xor.rightmost .hint_circle {
   display: block;
+  stroke: green;
+  fill: green;
 }
 
 /* Style XOR Symbol when DISABLED. */
