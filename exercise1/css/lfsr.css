@@ -14,6 +14,28 @@ text.bit {
   stroke-width: 3;
   fill: white;
 }
+.xor:hover {
+  stroke-width: 2;
+}
+line.xor {
+  pointer-events: none;
+}
+circle.xor {
+  cursor: pointer;
+}
+
+.xor-hint {
+  stroke: green;
+  stroke-width: 2;
+  fill: white;
+  cursor: pointer;
+}
+.xor-hint:hover {
+  stroke: green;
+  stroke-width: 4;
+  fill: green;
+  cursor: pointer;
+}
 
 .arrow {
   stroke: purple;

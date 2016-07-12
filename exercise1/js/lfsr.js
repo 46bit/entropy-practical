@@ -6,17 +6,19 @@ jQuery(document).ready(function () {
     var svg = container.append("svg")
       .attr("width", $container.width())
       .attr("height", $container.height())
-    var g = svg.append("g")//.classed("lfsr-machine")
+    var back_space = svg.append("g"),
+        fore_space = svg.append("g")
 
     var ui_bit_dimension = 60,
         ui_xor_radius = 12,
+        ui_xor_hint_radius = 5,
         arrowhead_dimension = 6,
         arrow_short = arrowhead_dimension * 2
 
     var bitwidth = 8
 
     // Define style for arrows.
-    var defs = g.append("defs")
+    var defs = back_space.append("defs")
     defs.append("marker")
       .attr("id", "arrowhead")
       .attr("viewBox", "0 -5 10 10")
@@ -27,16 +29,6 @@ jQuery(document).ready(function () {
       .attr("orient", "auto")
       .append("path")
         .attr("d", "M0,-5L10,0L0,5Z")
-
-    // Line from tap on bit 1 around to feedback into bit 1.
-    /*g.append("polyline")
-      .attr("class", "arrow")
-      .attr("points", polyline_points([
-        [ui_bit_dimension * (1 + 0.5), 5 + ui_bit_dimension * 2],
-        [5, 5 + ui_bit_dimension * 2],
-        [5, 5 + ui_bit_dimension / 2],
-        [ui_bit_dimension - 2*arrowhead_dimension, 5 + ui_bit_dimension / 2]
-      ]))*/
 
     var bits = []
     for (var b = 0; b < bitwidth; b++) {
@@ -59,15 +51,24 @@ jQuery(document).ready(function () {
           "r": ui_xor_radius,
           "class": "xor"
         }
+      } else {
+        bit.xor_hint = {
+          "b": b,
+          "cx": ui_bit_dimension * (1 + b + 0.5),
+          "cy": 5 + ui_bit_dimension * 2,
+          "r": ui_xor_hint_radius,
+          "class": "xor-hint"
+        }
       }
       bits.push(bit)
     }
 
     var previous_xor = false
     for (var b = 0; b < bits.length; b++) {
-      // Draw Bit
       var bit = bits[b]
-      bit.box_el = g.append("rect")
+
+      // Draw bit box
+      bit.box_el = fore_space.append("rect")
         .attr("class", bit.class)
         .attr("x", bit.x)
         .attr("y", bit.y)
@@ -77,7 +78,9 @@ jQuery(document).ready(function () {
           this.value = (this.value + 1) % 2
           this.text_el.text(this.value)
         }.bind(bit))
-      bit.text_el = g.append("text")
+
+      // Draw bit text
+      bit.text_el = fore_space.append("text")
         .attr("class", bit.class)
         .attr("x", bit.cx)
         .attr("y", bit.cy)
@@ -87,7 +90,8 @@ jQuery(document).ready(function () {
 
       if (bit.xor) {
         if (!previous_xor) {
-          g.append("polyline")
+          // Arrow from XOR to 1st bit feedback.
+          back_space.append("polyline")
             .attr("class", "arrow")
             .attr("points", polyline_points([
               [bit.xor.cx, bit.xor.cy],
@@ -96,7 +100,8 @@ jQuery(document).ready(function () {
               [bits[0].x - arrow_short, bits[0].cy]
             ]))
         } else {
-          g.append("polyline")
+          // Arrow from XOR to Previous XOR.
+          back_space.append("polyline")
             .attr("class", "arrow")
             .attr("points", polyline_points([
               [bit.xor.cx, bit.xor.cy],
@@ -104,25 +109,31 @@ jQuery(document).ready(function () {
             ]))
         }
 
-        g.append("polyline")
+        // Arrow from bit to XOR.
+        back_space.append("polyline")
           .attr("class", "arrow")
           .attr("points", polyline_points([
             [bit.cx, bit.y + bit.size],
             [bit.xor.cx, bit.xor.cy - bit.xor.r - arrow_short]
           ]))
 
-        g.append("circle")
+        // Draw XOR: circle, horizontal line, vertical line.
+        fore_space.append("circle")
           .attr("class", "xor")
           .attr("r", bit.xor.r)
           .attr("cx", bit.xor.cx)
           .attr("cy", bit.xor.cy)
-        g.append("line")
+          .on("click", function () {
+            bit.xor = false
+            // @TODO: Render this.
+          }.bind(bit))
+        fore_space.append("line")
           .attr("class", "xor")
           .attr("x1", bit.xor.cx - bit.xor.r)
           .attr("y1", bit.xor.cy)
           .attr("x2", bit.xor.cx + bit.xor.r)
           .attr("y2", bit.xor.cy)
-        g.append("line")
+        fore_space.append("line")
           .attr("class", "xor")
           .attr("x1", bit.xor.cx)
           .attr("y1", bit.xor.cy - bit.xor.r)
@@ -130,68 +141,14 @@ jQuery(document).ready(function () {
           .attr("y2", bit.xor.cy + bit.xor.r)
 
         previous_xor = bit.xor
+      } else {
+        fore_space.append("circle")
+          .attr("class", "xor-hint")
+          .attr("r", bit.xor_hint.r)
+          .attr("cx", bit.xor_hint.cx)
+          .attr("cy", bit.xor_hint.cy)
       }
     }
-
-    /*for (var b = 0; b < bitwidth; b++) {
-      // Arrow from bit to leftwards XOR.
-      g.append("polyline")
-        .attr("class", "arrow")
-        .attr("points", polyline_points([
-          [ui_bit_dimension * (1 + b + 0.5), 5 + ui_bit_dimension],
-          [ui_bit_dimension * (1 + b + 0.5), 5 + ui_bit_dimension * 2],
-          [ui_bit_dimension * (1 + b - 1 + 0.5) + ui_xor_radius, 5 + ui_bit_dimension * 2]
-        ]))
-
-      // Arrow from XOR to leftwards XOR.
-      g.append("polyline")
-        .attr("class", "arrow")
-        .attr("points", polyline_points([
-          //[ui_bit_dimension * (1 + b + 0.5), 5 + ui_bit_dimension],
-          [ui_bit_dimension * (1 + b + 0.5), 5 + ui_bit_dimension * 2],
-          [ui_bit_dimension * (1 + b - 1 + 0.5) + ui_xor_radius, 5 + ui_bit_dimension * 2]
-        ]))
-
-      // Tap arrow from bit to XOR.
-      g.append("polyline")
-        .attr("class", "arrow")
-        .attr("points", polyline_points([
-          [ui_bit_dimension * (1 + b + 0.5), 5 + ui_bit_dimension],
-          [ui_bit_dimension * (1 + b + 0.5), 5 + ui_bit_dimension * 2 - ui_xor_radius - 2*arrowhead_dimension]
-        ]))
-
-      // Bit boxes
-      g.append("rect")
-        .attr("class", "bit")
-        .attr("x", ui_bit_dimension + ui_bit_dimension * b)
-        .attr("y", 5)
-        .attr("width", ui_bit_dimension)
-        .attr("height", ui_bit_dimension)
-    }
-    for (var b = 0; b < bitwidth; b++) {
-      if (b + 1 < bitwidth) {
-        // <circle cx="25" cy="25" r="25" fill="purple" />
-        if (Math.random() > 0.4) {
-          g.append("circle")
-            .attr("class", "xor")
-            .attr("r", ui_xor_radius)
-            .attr("cx", ui_bit_dimension + ui_bit_dimension * (b + 0.5))
-            .attr("cy", 5 + ui_bit_dimension * 2)
-          g.append("line")
-            .attr("class", "xor")
-            .attr("x1", ui_bit_dimension + ui_bit_dimension * (b + 0.5) - ui_xor_radius)
-            .attr("y1", 5 + ui_bit_dimension * 2)
-            .attr("x2", ui_bit_dimension + ui_bit_dimension * (b + 0.5) + ui_xor_radius)
-            .attr("y2", 5 + ui_bit_dimension * 2)
-          g.append("line")
-            .attr("class", "xor")
-            .attr("x1", ui_bit_dimension + ui_bit_dimension * (b + 0.5))
-            .attr("y1", 5 + ui_bit_dimension * 2 - ui_xor_radius)
-            .attr("x2", ui_bit_dimension + ui_bit_dimension * (b + 0.5))
-            .attr("y2", 5 + ui_bit_dimension * 2 + ui_xor_radius)
-        }
-      }
-    }*/
   })
 })
 
@@ -202,21 +159,3 @@ function polyline_points(points) {
   }
   return points_str
 }
-
-/*
-        var arr = [];
-        arr.push(map.unproject([x1 , y1]));
-        arr.push(map.unproject([x2 , y2]));
-        var options ={color: 'green', weight: 3,opacity: 0.5, smoothFactor: 1 };
-        var polyline = new L.Polyline(arr, options);
-
-
-
-<polyline fill="none" stroke="blue" stroke-width="2"
- 3    points="05,30
- 4            15,30
- 5            15,20
- 6            25,20
- 7            25,10
- 8            35,10" />
-*/
