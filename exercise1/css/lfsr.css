@@ -1,0 +1,27 @@
+rect.bit {
+  stroke: black;
+  stroke-width: 4;
+  fill: transparent;
+  cursor: pointer;
+}
+text.bit {
+  pointer-events: none;
+  font: bold 24px monospace;
+}
+
+.xor {
+  stroke: green;
+  stroke-width: 3;
+  fill: white;
+}
+
+.arrow {
+  stroke: purple;
+  stroke-width: 4;
+  fill: transparent;
+  marker-end: url(#arrowhead);
+}
+
+marker#arrowhead {
+  fill: purple;
+}
