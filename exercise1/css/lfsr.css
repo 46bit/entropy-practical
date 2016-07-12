@@ -1,48 +1,3 @@
-/*rect.bit {
-  stroke: black;
-  stroke-width: 4;
-  fill: white;
-  cursor: pointer;
-}
-text.bit {
-  pointer-events: none;
-  font: bold 24px monospace;
-}
-
-.symbol_circle, .symbol_hoz_line, .symbol_ver_line {
-  stroke: green;
-  stroke-width: 3;
-  fill: white;
-}
-.xor:hover {
-  stroke-width: 2;
-}
-.symbol_hoz_line, .symbol_ver_line {
-  pointer-events: none;
-}
-circle.xor {
-  cursor: pointer;
-}
-
-.xor-hint {
-  stroke: green;
-  stroke-width: 2;
-  fill: white;
-  cursor: pointer;
-}
-.xor-hint:hover {
-  stroke: green;
-  stroke-width: 4;
-  fill: green;
-  cursor: pointer;
-}
-
-.lfsr .line, .lfsr .arrow {
-  stroke: purple;
-  stroke-width: 4;
-  fill: transparent;
-}*/
-
 .lfsr .line, .lfsr .arrow {
   stroke: purple;
   stroke-width: 4;
@@ -101,9 +56,7 @@ marker#arrowhead {
 }
 
 /* Style XOR Symbol when DISABLED. */
-.lfsr .fore_space .bit .xor.disabled .symbol_circle {
-  display: none;
-}
+.lfsr .fore_space .bit .xor.disabled .symbol_circle,
 .lfsr .fore_space .bit .xor.disabled .symbol_line {
   display: none;
 }
@@ -112,9 +65,7 @@ marker#arrowhead {
 }
 
 /* Style XOR input arrows when DISABLED. */
-.lfsr .rear_space .bit .xor.disabled .xor_arrow {
-  visibility: hidden;
-}
+.lfsr .rear_space .bit .xor.disabled .xor_arrow,
 .lfsr .rear_space .bit .xor.rightmost .feedback_xor_arrow {
   visibility: hidden;
 }
