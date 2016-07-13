@@ -6,9 +6,20 @@
   <script src="js/jquery-3.0.0.min.js"></script>
   <script src="js/d3.v4.min.js"></script>
 
-  <script type="text/javascript" src="_static/numbers-noise-plot.js"></script>
-  <script type="text/javascript" src="_static/numbers-noise-coord-plot.js"></script>
   <script src="js/lfsr.js"></script>
+  <script>
+    jQuery(document).ready(function () {
+      window.lfsrs = []
+      d3.selectAll(".lfsr").select(function () {
+        var lfsr = new LFSR(this, parseInt($(this).attr("data-bit-width")))
+        window.lfsrs.push(lfsr)
+        setInterval(function() {
+          console.log(lfsr.state())
+          lfsr.tick()
+        }, 30)
+      })
+    })
+    </script>
 </head>
 <body>
   <h1>PRNG Cyberexperiment - Exercise 1: LFSR</h1>

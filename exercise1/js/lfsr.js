@@ -269,6 +269,8 @@ LFSR.prototype.render = function render() {
     var xor_g_class = "xor " + ((bit.xor.enabled) ? "enabled" : "disabled") + (rightmost ? " rightmost" : "")
     bit.xor.elements.fore_g.attr("class", xor_g_class)
     bit.xor.elements.rear_g.attr("class", xor_g_class)
+
+    bit.xor.elements.tap_checkbox.attr("checked", bit.xor.enabled)
   }
 }
 
@@ -306,15 +308,3 @@ LFSR.prototype.polyline_points = function polyline_points(points) {
   }
   return points_str
 }
-
-jQuery(document).ready(function () {
-  window.lfsrs = []
-  d3.selectAll(".lfsr").select(function () {
-    var lfsr = new LFSR(this, parseInt($(this).attr("data-bit-width")))
-    window.lfsrs.push(lfsr)
-    setInterval(function() {
-      console.log(lfsr.state())
-      lfsr.tick()
-    }, 30)
-  })
-})
