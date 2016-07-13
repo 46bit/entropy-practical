@@ -22,7 +22,7 @@ var LFSR = function(domContainer, bit_width) {
     "xor_radius": 12,
     "xor_hint_radius": 5,
     "arrowhead_length": 12,
-    "bit_xor_space": 56,
+    "bit_xor_space": 70,
     "feedback_left_margin": 5
   }
 
@@ -192,6 +192,29 @@ LFSR.prototype.drawXorSymbol = function drawXorSymbol(bit) {
     .attr("y1", xor.ty)
     .attr("x2", xor.cx)
     .attr("y2", xor.by)
+
+  xor.elements.tap_checkbox_container = $("<div>")
+    .attr({
+      "class": xor.class + " tap_checkbox_container"
+    })
+    .css({
+      "left": bit.lx,
+      "top": bit.by + _self.dimensions.bit_xor_space / 3,
+      "width": bit.size
+    })
+    .appendTo(_self.$container)
+
+  xor.elements.tap_checkbox = $("<input>")
+    .attr({
+      "type": "checkbox",
+      "class": xor.class + " tap_checkbox",
+      "checked": xor.enabled
+    })
+    .appendTo(xor.elements.tap_checkbox_container)
+    .on("change", function () {
+      xor.enabled = this.checked
+      _self.render()
+    })
 }
 
 LFSR.prototype.drawXorArrows = function drawXorArrows(tap_bit, in_bit) {
@@ -249,6 +272,33 @@ LFSR.prototype.render = function render() {
   }
 }
 
+LFSR.prototype.state = function state() {
+  var _self = this
+
+  var value = 0
+  for (var i = 0; i < _self.bits.length; i++) {
+    value = (value << 1) | _self.bits[i].value
+  }
+  return value
+}
+
+LFSR.prototype.tick = function tick() {
+  var _self = this
+
+  var feedback = 0
+  for (var i = _self.bits.length - 1; i >= 0; i--) {
+    if (_self.bits[i].xor.enabled) {
+      feedback ^= _self.bits[i].value
+    }
+  }
+
+  for (var i = _self.bits.length - 1; i >= 0; i--) {
+    var previous_bit_value = (i > 0) ? _self.bits[i-1].value : feedback
+    _self.bits[i].value = previous_bit_value
+  }
+  _self.render()
+}
+
 LFSR.prototype.polyline_points = function polyline_points(points) {
   var points_str = ""
   for (i in points) {
@@ -262,5 +312,9 @@ jQuery(document).ready(function () {
   d3.selectAll(".lfsr").select(function () {
     var lfsr = new LFSR(this, parseInt($(this).attr("data-bit-width")))
     window.lfsrs.push(lfsr)
+    setInterval(function() {
+      console.log(lfsr.state())
+      lfsr.tick()
+    }, 30)
   })
 })

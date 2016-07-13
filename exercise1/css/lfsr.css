@@ -1,3 +1,16 @@
+.lfsr {
+  position: relative;
+}
+
+.lfsr .tap_checkbox_container {
+  position: absolute;
+}
+
+.lfsr .tap_checkbox {
+  margin: 0 auto;
+  display: block;
+}
+
 .lfsr .line, .lfsr .arrow {
   stroke: purple;
   stroke-width: 4;
