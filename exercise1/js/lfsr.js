@@ -1,8 +1,9 @@
-var LFSR = function(domContainer, bit_width) {
+var LFSR = function(domContainer, bit_width, onchange_hook) {
   var _self = this
 
   _self.domContainer = domContainer
   _self.bit_width = bit_width
+  _self.onchange_hook = onchange_hook
 
   _self.container = d3.select(_self.domContainer)
   _self.$container = $(_self.domContainer)
@@ -41,6 +42,8 @@ LFSR.prototype.initMachine = function initMachine() {
     var bit = _self.newBit(b, (Math.random() >= 0.5))
     _self.bits.push(bit)
   }
+
+  _self.onchange_hook(_self)
 }
 
 LFSR.prototype.newBit = function newBit(bit_index, xor_enabled) {
@@ -141,6 +144,7 @@ LFSR.prototype.drawBit = function drawBit(bit) {
     .on("click", function () {
       bit.value = (bit.value + 1) % 2
       _self.render()
+      _self.onchange_hook(_self)
     }.bind(bit))
 
   bit.elements.register_text = bit.elements.fore_g.append("text")
@@ -167,6 +171,7 @@ LFSR.prototype.drawXorSymbol = function drawXorSymbol(bit) {
     .on("click", function () {
       bit.xor.enabled = !bit.xor.enabled
       _self.render()
+      _self.onchange_hook(_self)
     }.bind(bit))
 
   xor.elements.symbol_circle = xor.elements.fore_g.append("circle")
@@ -177,6 +182,7 @@ LFSR.prototype.drawXorSymbol = function drawXorSymbol(bit) {
     .on("click", function () {
       bit.xor.enabled = !bit.xor.enabled
       _self.render()
+      _self.onchange_hook(_self)
     }.bind(bit))
 
   xor.elements.symbol_hoz_line = xor.elements.fore_g.append("line")
@@ -214,6 +220,7 @@ LFSR.prototype.drawXorSymbol = function drawXorSymbol(bit) {
     .on("change", function () {
       xor.enabled = this.checked
       _self.render()
+      _self.onchange_hook(_self)
     })
 }
 

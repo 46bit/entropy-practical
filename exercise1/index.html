@@ -6,23 +6,59 @@
   <script src="js/jquery-3.0.0.min.js"></script>
   <script src="js/d3.v4.min.js"></script>
 
+  <script type="text/javascript" src="js/inputs-noise-plot.js"></script>
+  <script type="text/javascript" src="js/inputs-noise-coord-plot.js"></script>
+  <script type="text/javascript" src="js/cycle-counter.js"></script>
   <script src="js/lfsr.js"></script>
+  <script src="js/lfsr-headless.js"></script>
   <script>
+  var bit_width, lfsr_headless, lfsr, noise_plot, coord_plot, cycle_counter
     jQuery(document).ready(function () {
-      window.lfsrs = []
-      d3.selectAll(".lfsr").select(function () {
-        var lfsr = new LFSR(this, parseInt($(this).attr("data-bit-width")))
-        window.lfsrs.push(lfsr)
+
+      d3.select(".lfsr").select(function () {
+        bit_width = parseInt($(this).attr("data-bit-width"))
+        lfsr_headless = new LFSRHeadless(bit_width)
+        noise_plot = new InputsNoisePlot($(".inputs-noise-plot").attr("id"), bit_width)
+        cycle_counter = new CycleCounter()
+        //coord_plot = new InputsNoiseCoordlot($(".inputs-noise-coord-plot").attr("id"), bit_width)
+
+        lfsr = new LFSR(this, bit_width, function (lfsr) {
+          lfsr_headless.bits = JSON.parse(JSON.stringify(lfsr.bits))
+          setTimeout(function () {
+            //coord_plot.clear()
+            cycle_counter.reset()
+            var had_cycle_length = false
+            for (var i = 0; i < noise_plot.numberCapacity; i++) {
+              var lfsr_state2 = lfsr_headless.state()
+              noise_plot.drawNumber(lfsr_state2)
+              if (!had_cycle_length) {
+                var cycle_length = cycle_counter.countValue(lfsr_state2)
+                if (cycle_length) {
+                  console.log("cycle length: " + cycle_length)
+                  cycle_counter.reset()
+                  had_cycle_length = true
+                }
+              }
+              //coord_plot.drawNumber(lfsr_state2)
+              lfsr_headless.tick()
+            }
+          }, 0)
+        })
+
         setInterval(function() {
-          console.log(lfsr.state())
+          var lfsr_state = lfsr.state()
+          console.log(lfsr_state)
           lfsr.tick()
-        }, 30)
+        }, 300)
       })
     })
     </script>
 </head>
 <body>
   <h1>PRNG Cyberexperiment - Exercise 1: LFSR</h1>
-  <div class="lfsr" data-bit-width="8" style="width: 600px; height: 400px;"></div>
+  <div class="lfsr" data-bit-width="10" style="width: 670px; height: 155px;"></div>
+
+  <canvas class="inputs-noise-plot" id="inputs-noise-lcg" width="300" height="325" data-plot-name="LFSR Noise Plot"></canvas>
+  <canvas class="inputs-noise-coord-plot" id="inputs-noise-coord-lcg" width="300" height="325" data-plot-name="LFSR Coordinate Plot"></canvas>
 </body>
 </html>
