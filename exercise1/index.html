@@ -3,62 +3,92 @@
 <head>
   <title>PRNG Cyberexperiment - Exercise 1: LFSR</title>
   <link rel="stylesheet" href="css/lfsr.css">
+  <link rel="stylesheet" href="css/shift-register.css">
+  <link rel="stylesheet" href="css/feedback-shift-register.css">
   <script src="js/jquery-3.0.0.min.js"></script>
   <script src="js/d3.v4.min.js"></script>
 
   <script type="text/javascript" src="js/inputs-noise-plot.js"></script>
-  <script type="text/javascript" src="js/inputs-noise-coord-plot.js"></script>
   <script type="text/javascript" src="js/cycle-counter.js"></script>
+  <script src="js/shift-register.js"></script>
+  <script src="js/feedback-shift-register.js"></script>
   <script src="js/lfsr.js"></script>
   <script src="js/lfsr-headless.js"></script>
   <script>
-  var bit_width, lfsr_headless, lfsr, noise_plot, coord_plot, cycle_counter
-    jQuery(document).ready(function () {
-
-      d3.select(".lfsr").select(function () {
-        bit_width = parseInt($(this).attr("data-bit-width"))
-        lfsr_headless = new LFSRHeadless(bit_width)
-        noise_plot = new InputsNoisePlot($(".inputs-noise-plot").attr("id"), bit_width)
-        cycle_counter = new CycleCounter()
-        //coord_plot = new InputsNoiseCoordlot($(".inputs-noise-coord-plot").attr("id"), bit_width)
-
-        lfsr = new LFSR(this, bit_width, function (lfsr) {
-          lfsr_headless.bits = JSON.parse(JSON.stringify(lfsr.bits))
-          setTimeout(function () {
-            //coord_plot.clear()
-            cycle_counter.reset()
-            var had_cycle_length = false
-            for (var i = 0; i < noise_plot.numberCapacity; i++) {
-              var lfsr_state2 = lfsr_headless.state()
-              noise_plot.drawNumber(lfsr_state2)
-              if (!had_cycle_length) {
-                var cycle_length = cycle_counter.countValue(lfsr_state2)
-                if (cycle_length) {
-                  console.log("cycle length: " + cycle_length)
-                  cycle_counter.reset()
-                  had_cycle_length = true
-                }
-              }
-              //coord_plot.drawNumber(lfsr_state2)
-              lfsr_headless.tick()
-            }
-          }, 0)
-        })
-
-        setInterval(function() {
-          var lfsr_state = lfsr.state()
-          console.log(lfsr_state)
-          lfsr.tick()
-        }, 300)
-      })
+  var shift_register, feedback_shift_register
+  jQuery(document).ready(function () {
+    d3.select(".shift-register").select(function () {
+      shift_register = new ShiftRegister(this, parseInt($(this).attr("data-bit-width")))
     })
-    </script>
+    d3.select(".feedback-shift-register").select(function () {
+      feedback_shift_register = new FeedbackShiftRegister(this, parseInt($(this).attr("data-bit-width")))
+    })
+  })
+
+  var bit_width, lfsr_headless, lfsr, noise_plot, cycle_counter
+  jQuery(document).ready(function () {
+
+    d3.select(".lfsr").select(function () {
+      bit_width = parseInt($(this).attr("data-bit-width"))
+      lfsr_headless = new LFSRHeadless(bit_width)
+      noise_plot = new InputsNoisePlot($(".inputs-noise-plot").attr("id"), bit_width)
+      cycle_counter = new CycleCounter()
+
+      lfsr = new LFSR(this, bit_width, function (lfsr) {
+        lfsr_headless.bits = JSON.parse(JSON.stringify(lfsr.bits))
+        setTimeout(function () {
+          cycle_counter.reset()
+          var had_cycle_length = false
+          for (var i = 0; i < noise_plot.numberCapacity; i++) {
+            var lfsr_state2 = lfsr_headless.state()
+            noise_plot.drawNumber(lfsr_state2)
+            if (!had_cycle_length) {
+              var cycle_length = cycle_counter.countValue(lfsr_state2)
+              if (cycle_length) {
+                console.log("cycle length: " + cycle_length)
+                cycle_counter.reset()
+                had_cycle_length = true
+              }
+            }
+            lfsr_headless.tick()
+          }
+        }, 0)
+      })
+
+      setInterval(function() {
+        var lfsr_state = lfsr.state()
+        console.log(lfsr_state)
+        lfsr.tick()
+      }, 300)
+    })
+  })
+  </script>
 </head>
 <body>
   <h1>PRNG Cyberexperiment - Exercise 1: LFSR</h1>
-  <div class="lfsr" data-bit-width="10" style="width: 670px; height: 155px;"></div>
+  <p><b>To learn more about Pseudo-random Number Generation, we're going to take a look at a relatively simple algorithm for it.</b></p>
 
-  <canvas class="inputs-noise-plot" id="inputs-noise-lcg" width="300" height="325" data-plot-name="LFSR Noise Plot"></canvas>
-  <canvas class="inputs-noise-coord-plot" id="inputs-noise-coord-lcg" width="300" height="325" data-plot-name="LFSR Coordinate Plot"></canvas>
+  <h2>Shift Registers</h2>
+  <p>If you've done hardware you may well recognise the diagram below as a Shift Register. If not, think of it as a fixed-size buffer for bits. On a <code>clock signal</code>, 1 bit goes <code>out</code> on the right and 1 bit goes <code>in</code> on the left. As such it's a FIFO buffer for bits.</p>
+  <button>Tick &#9654;</button>
+  <div class="shift-register" data-bit-width="8" style="width: 600px; height: 70px;"></div>
+  <p>The input bits can come from anywhere &amp; output bits can go anywhere. This is merely a component in a system. These are commonly used for converting between serial and parallel interfaces.</p>
+  <hr>
+
+  <h2>Feeding back the output to input</h2>
+  <p>Consider what would happen if in the example above we connected the <code>output</code> to <code>input</code>. This has become a ring buffer.</p>
+  <button>Tick &#9654;</button>
+  <div class="feedback-shift-register" data-bit-width="8" style="width: 600px; height: 90px;"></div>
+  <p>Now let's see how to make a PRNG out of this.</p>
+  <hr>
+
+  <h2>Linear Feedback Shift Register</h2>
+  <p>In the example above we connected <code>output</code> to <code>input</code>, passing bits unmodified around again and again. The difference with a LFSR is that we apply a linear function to the internal state, i.e. <code>f(register) -> input</code>.</p>
+  <p>Choosing that <code>f</code> is tricky. <code>XOR</code> (denoted <code>&oplus;</code>) has the useful property that it can express any linear function. We use <code>&oplus;</code> to combine several bits from the register into one input bit.</p>
+  <p>Choosing which bits to tap for this function is an important parameter for a LFSR. Get it right and you have a sequence of length <code>2<sup>b</sup></code>. Get it wrong and you might find your 'randomly generated coordinates to spawn an enemy' are always point X or point Y.</p>
+  <div class="lfsr" data-bit-width="14" style="width: 960px; height: 155px;"></div>
+  <canvas class="inputs-noise-plot" id="inputs-noise-lcg" width="300" height="225" data-plot-name="LFSR Noise Plot"></canvas>
+  <!--<canvas class="inputs-noise-coord-plot" id="inputs-noise-coord-lcg" width="300" height="325" data-plot-name="LFSR Coordinate Plot"></canvas>-->
+  <hr>
 </body>
 </html>
