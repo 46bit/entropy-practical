@@ -23,6 +23,10 @@
 marker#arrowhead {
   fill: purple;
 }
+.lfsr .channel_label {
+  fill: purple;
+  font: bold 16px monospace;
+}
 
 .lfsr .fore_space {}
 .lfsr .fore_space .bit {}
@@ -51,8 +55,7 @@ marker#arrowhead {
   fill: white;
 }
 .lfsr .fore_space .bit .xor.rightmost .symbol_circle,
-.lfsr .fore_space .bit .xor.rightmost .symbol_line,
-.lfsr .rear_space .bit .xor.rightmost .bit_xor_arrow {
+.lfsr .fore_space .bit .xor.rightmost .symbol_line {
   display: none;
 }
 .lfsr .fore_space .bit .xor .hint_circle {
@@ -70,7 +73,8 @@ marker#arrowhead {
 
 /* Style XOR Symbol when DISABLED. */
 .lfsr .fore_space .bit .xor.disabled .symbol_circle,
-.lfsr .fore_space .bit .xor.disabled .symbol_line {
+.lfsr .fore_space .bit .xor.disabled .symbol_line,
+.lfsr .fore_space .bit .xor.disabled .channel_label {
   display: none;
 }
 .lfsr .fore_space .bit .xor.disabled .hint_circle {

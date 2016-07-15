@@ -199,6 +199,13 @@ LFSR.prototype.drawXorSymbol = function drawXorSymbol(bit) {
     .attr("x2", xor.cx)
     .attr("y2", xor.by)
 
+  xor.elements.label_text =  xor.elements.fore_g.append("text")
+      .attr("class", xor.class + " channel_label")
+      .attr("x", xor.cx)
+      .attr("y", xor.by + 15)
+      .attr("text-anchor", "middle")
+      .text("tap" + (xor.index + 1))
+
   xor.elements.tap_checkbox_container = $("<div>")
     .attr({
       "class": xor.class + " tap_checkbox_container"
@@ -230,15 +237,15 @@ LFSR.prototype.drawXorArrows = function drawXorArrows(tap_bit, in_bit) {
   tap_bit.xor.elements.rear_g = tap_bit.elements.rear_g.append("g")
     .attr("class", "xor " + ((tap_bit.xor.enabled) ? "enabled" : "disabled"))
 
-  if (in_bit) {
-    // Arrow from Bit Register to XOR.
-    tap_bit.xor.elements.bit_xor_arrow = tap_bit.xor.elements.rear_g.append("line")
-      .attr("class", tap_bit.xor.class + " bit_xor_arrow arrow xor_arrow")
-      .attr("x1", tap_bit.cx)
-      .attr("y1", tap_bit.cy)
-      .attr("x2", tap_bit.xor.cx)
-      .attr("y2", tap_bit.xor.ty - _self.dimensions.arrowhead_length)
+  // Arrow from Bit Register to XOR.
+  tap_bit.xor.elements.bit_xor_arrow = tap_bit.xor.elements.rear_g.append("line")
+    .attr("class", tap_bit.xor.class + " bit_xor_arrow arrow xor_arrow")
+    .attr("x1", tap_bit.cx)
+    .attr("y1", tap_bit.cy)
+    .attr("x2", tap_bit.xor.cx)
+    .attr("y2", tap_bit.xor.ty - _self.dimensions.arrowhead_length)
 
+  if (in_bit) {
     // Arrow from right XOR to this XOR.
     tap_bit.xor.elements.feedback_xor_arrow = tap_bit.xor.elements.rear_g.append("line")
       .attr("class", tap_bit.xor.class + " feedback_xor_arrow arrow xor_arrow")
@@ -305,7 +312,10 @@ LFSR.prototype.tick = function tick() {
     var previous_bit_value = (i > 0) ? _self.bits[i-1].value : feedback
     _self.bits[i].value = previous_bit_value
   }
+
   _self.render()
+
+  return _self.bits[0].value
 }
 
 LFSR.prototype.polyline_points = function polyline_points(points) {

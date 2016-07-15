@@ -168,6 +168,12 @@ ShiftRegister.prototype.drawInOutArrows = function drawInOutArrows() {
       .attr("y1", _self.in_arrow.y)
       .attr("x2", _self.in_arrow.rx)
       .attr("y2", _self.in_arrow.y)
+  _self.in_arrow.text = _self.rear_space.append("text")
+      .attr("class", _self.bits[0].class + " channel_label")
+      .attr("x", _self.in_arrow.lx + _self.dimensions.arrowhead_length)
+      .attr("y", (_self.bits[0].ty + _self.bits[0].cy) / 2)
+      .attr("text-anchor", "start")
+      .text("in")
 
   var final_bit = _self.bits[_self.bits.length - 1]
   _self.out_arrow = {
@@ -181,24 +187,35 @@ ShiftRegister.prototype.drawInOutArrows = function drawInOutArrows() {
       .attr("y1", _self.out_arrow.y)
       .attr("x2", _self.out_arrow.rx)
       .attr("y2", _self.out_arrow.y)
+  _self.out_arrow.text = _self.rear_space.append("text")
+      .attr("class", final_bit.class + " channel_label")
+      .attr("x", _self.out_arrow.rx)
+      .attr("y", (final_bit.ty + final_bit.cy) / 2)
+      .attr("text-anchor", "end")
+      .text("out")
 }
 
 ShiftRegister.prototype.tick = function tick() {
   var _self = this
 
   for (var i = _self.bits.length - 1; i >= 0; i--) {
-    var bit = _self.bits[i]
+    var bit = _self.bits[i],
+        source_bit_value = (i > 0) ? _self.bits[i-1].value : ((Math.random() >= 0.5) ? 1 : 0)
+
+    bit.value = source_bit_value
+    bit.elements.register_text
+      .text(bit.value)
     /*bit.elements.register_text
       .transition()
       .attr("x", bit.cx + _self.dimensions.bit_size)*/
-    bit.elements.register_circle
+    /*bit.elements.register_circle
       .transition()
       .attr("cx", (i == _self.bits.length - 1) ? _self.width + 100 : bit.cx + _self.dimensions.bit_size)
       .style("opacity", (i == _self.bits.length - 1) ? 0.5 : 1)
     bit.elements.register_text
       .transition()
       .attr("x", (i == _self.bits.length - 1) ? _self.width + 100 : bit.cx + _self.dimensions.bit_size)
-      .style("opacity", (i == _self.bits.length - 1) ? 0.5 : 1)
+      .style("opacity", (i == _self.bits.length - 1) ? 0.5 : 1)*/
   }
 }
 

@@ -145,6 +145,19 @@ FeedbackShiftRegister.prototype.drawInOutArrows = function drawInOutArrows() {
       [5, start_bit.cy],
       [start_bit.lx - _self.dimensions.arrowhead_length, start_bit.cy]
     ]))
+  _self.feedback_line3 = _self.rear_space.append("polyline")
+    .attr("class", "arrow feedback_line")
+    .attr("points", _self.polyline_points([
+      [end_bit.cx, end_bit.cy],
+      [end_bit.cx, end_bit.by + _self.dimensions.bit_size / 3],
+      [5 + _self.dimensions.arrowhead_length, end_bit.by + _self.dimensions.bit_size / 3]
+    ]))
+  _self.feedback_line4 = _self.rear_space.append("polyline")
+    .attr("class", "arrow feedback_line")
+    .attr("points", _self.polyline_points([
+      [end_bit.cx, end_bit.cy],
+      [end_bit.cx, end_bit.by + _self.dimensions.bit_size / 3 - _self.dimensions.arrowhead_length]
+    ]))
 }
 
 FeedbackShiftRegister.prototype.tick = function tick() {

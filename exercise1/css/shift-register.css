@@ -23,6 +23,10 @@
 marker#arrowhead {
   fill: purple;
 }
+.shift-register .channel_label {
+  fill: purple;
+  font: bold 16px monospace;
+}
 
 .shift-register .fore_space {}
 .shift-register .fore_space .bit .register_rect {

@@ -65,4 +65,6 @@ LFSRHeadless.prototype.tick = function tick() {
     var previous_bit_value = (i > 0) ? _self.bits[i-1].value : feedback
     _self.bits[i].value = previous_bit_value
   }
+
+  return _self.bits[0].value
 }
