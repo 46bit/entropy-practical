@@ -1,8 +1,9 @@
-var ShiftRegister = function(domContainer, bit_width) {
+var ShiftRegister = function(domContainer, bit_width, bits_with_arrows) {
   var _self = this
 
   _self.domContainer = domContainer
   _self.bit_width = bit_width
+  _self.bits_with_arrows = !!bits_with_arrows
 
   _self.container = d3.select(_self.domContainer)
   _self.$container = $(_self.domContainer)
@@ -52,6 +53,9 @@ ShiftRegister.prototype.newBit = function newBit(bit_index, xor_enabled) {
 
   // X coordinates: left, centre, right
   bit.lx = bit.size * (1 + bit.index)
+  if (_self.bits_with_arrows) {
+    bit.lx *= 2
+  }
   bit.cx = bit.lx + bit.size / 2
   bit.rx = bit.lx + bit.size
   // Y coordinates: top, centre, bottom
@@ -81,9 +85,16 @@ ShiftRegister.prototype.drawDefinitions = function drawDefinitions() {
 ShiftRegister.prototype.drawMachine = function drawMachine() {
   var _self = this
 
+  var previous_bit = false
   for (var b = _self.bits.length - 1; b >= 0; b--) {
     var bit = _self.bits[b]
     _self.drawBit(bit)
+
+    if (_self.bits_with_arrows && previous_bit) {
+      _self.drawBitArrow(bit, previous_bit)
+    }
+
+    previous_bit = bit
   }
   _self.drawInOutArrows()
 }
@@ -111,6 +122,17 @@ ShiftRegister.prototype.drawBit = function drawBit(bit) {
   bit.elements.register_text_g = bit.elements.fore_g.append("g")
 
   _self.drawBitCircle(bit)
+}
+
+ShiftRegister.prototype.drawBitArrow = function drawBitArrow(left_bit, right_bit) {
+  var _self = this
+
+  left_bit.elements.bit_arrow = left_bit.elements.rear_g.append("line")
+      .attr("class", left_bit.class + " arrow out_arrow")
+      .attr("x1", left_bit.cx)
+      .attr("y1", left_bit.cy)
+      .attr("x2", right_bit.lx - _self.dimensions.arrowhead_length)
+      .attr("y2", right_bit.cy)
 }
 
 ShiftRegister.prototype.drawBitCircle = function drawBitCircle(bit) {
