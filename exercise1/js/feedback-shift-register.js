@@ -105,7 +105,7 @@ FeedbackShiftRegister.prototype.drawBit = function drawBit(bit) {
     .attr("height", bit.size)
     .on("click", function () {
       bit.value = (bit.value + 1) % 2
-      _self.render()
+      bit.elements.register_text.text(bit.value)
     }.bind(bit))
 
   bit.elements.register_text_g = bit.elements.fore_g.append("g")

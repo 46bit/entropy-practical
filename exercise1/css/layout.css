@@ -1,0 +1,20 @@
+body {
+  font: 15px "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.container {
+  width: 960px;
+  margin: 0 auto;
+}
+
+.shift-register, .feedback-shift-register, .lfsr {
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 35px;
+}
+
+hr {
+  border: 1px dotted lightblue;
+}

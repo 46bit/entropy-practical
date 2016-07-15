@@ -318,6 +318,40 @@ LFSR.prototype.tick = function tick() {
   return _self.bits[0].value
 }
 
+LFSR.prototype.polynomial = function polynomial() {
+  var _self = this
+
+  var p = []
+  for (var i = _self.bits.length - 1; i >= 0; i--) {
+    var bit = _self.bits[i]
+    if (bit.xor.enabled) {
+      p.push(["x", i])
+    }
+  }
+  p.push(1)
+
+  return p
+}
+
+LFSR.prototype.polynomialHtml = function polynomialHtml() {
+  var _self = this
+
+  var p = _self.polynomial()
+  var t = $("<span>"),
+      terms = []
+
+  for (var i = _self.bits.length - 1; i >= 0; i--) {
+    var bit = _self.bits[i]
+    if (bit.xor.enabled) {
+      var term = "<i>x</i><sup>" + (bit.index + 1) + "</sup>"
+      terms.push(term)
+    }
+  }
+  terms.push("<i>1</i>")
+
+  return "<span>" + terms.join(" + ") + "</span>"
+}
+
 LFSR.prototype.polyline_points = function polyline_points(points) {
   var points_str = ""
   for (i in points) {

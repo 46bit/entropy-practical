@@ -2,6 +2,7 @@
 <html>
 <head>
   <title>PRNG Cyberexperiment - Exercise 1: LFSR</title>
+  <link rel="stylesheet" href="css/layout.css">
   <link rel="stylesheet" href="css/lfsr.css">
   <link rel="stylesheet" href="css/shift-register.css">
   <link rel="stylesheet" href="css/feedback-shift-register.css">
@@ -40,6 +41,9 @@
       cycle_counter = new CycleCounter()
 
       lfsr = new LFSR(this, bit_width, function (lfsr) {
+        $(".lfsr-feedback-polynomial").html(lfsr.polynomialHtml())
+
+        $(".lfsr-cycle-length").html("???")
         lfsr_headless.bits = JSON.parse(JSON.stringify(lfsr.bits))
         setTimeout(function () {
           cycle_counter.reset()
@@ -50,6 +54,7 @@
             if (!had_cycle_length) {
               var cycle_length = cycle_counter.countValue(lfsr_state2)
               if (cycle_length) {
+                $(".lfsr-cycle-length").html(cycle_length)
                 console.log("cycle length: " + cycle_length)
                 cycle_counter.reset()
                 had_cycle_length = true
@@ -59,6 +64,7 @@
           }
         }, 0)
       })
+      $(".lfsr-feedback-polynomial").html(lfsr.polynomialHtml())
 
       setInterval(function() {
         var lfsr_state = lfsr.state()
@@ -70,43 +76,40 @@
   </script>
 </head>
 <body>
-  <h1>PRNG Cyberexperiment - Exercise 1: LFSR</h1>
-  <p><b>To learn more about Pseudo-random Number Generation, we're going to take a look at a relatively simple algorithm for it.</b></p>
+  <div class="container">
+    <h1>PRNG Cyberexperiment - Exercise 1: LFSR</h1>
+    <p><b>To learn more about Pseudo-random Number Generation, we're going to take a look at a relatively simple algorithm for it.</b></p>
+    <hr>
 
-  <h2>Shift Registers</h2>
-  <p>If you've done hardware you may well recognise the diagram below as a Shift Register. If not, think of it as a fixed-size buffer for bits. On a <code>clock signal</code>, 1 bit goes <code>out</code> on the right and 1 bit goes <code>in</code> on the left. As such it's a FIFO buffer for bits.</p>
-  <button>Step &#9654;</button>
-  <div class="shift-register" data-bit-width="8" style="width: 600px; height: 70px;"></div>
+    <h2>Shift Registers</h2>
+    <p>If you've done hardware you may well recognise the diagram below as a Shift Register. If not, think of it as a fixed-size buffer for bits. On a <code>clock signal</code>, 1 bit goes <code>out</code> on the right and 1 bit goes <code>in</code> on the left. As such it's a FIFO buffer for bits.</p>
+    <button>Step &#9654;</button>
+    <div class="shift-register" data-bit-width="8" style="width: 600px; height: 70px;"></div>
 
-  <p><b>N.B.</b> Each black box represents a flipflop, a hardware element able to store one bit. The line of several next to each other is a shorthand for this:</p>
-  <div class="shift-register" data-bit-width="4" data-bits-with-arrows="true" style="width: 600px; height: 70px;"></div>
-  <p>The input bits can come from anywhere &amp; output bits can go anywhere. This is merely a component in a system. These are commonly used for converting between serial and parallel interfaces.</p>
-  <hr>
+    <p><b>N.B.</b> Each black box represents a flipflop, a hardware element able to store one bit. The line of several next to each other is a shorthand for this:</p>
+    <div class="shift-register" data-bit-width="4" data-bits-with-arrows="true" style="width: 600px; height: 70px;"></div>
+    <p>The input bits can come from anywhere &amp; output bits can go anywhere. This is merely a component in a system. These are commonly used for converting between serial and parallel interfaces.</p>
+    <hr>
 
-  <h2>Feeding back the output to input</h2>
-  <p>Consider what would happen if in the example above we connected the <code>output</code> to <code>input</code>. This has become a ring buffer.</p>
-  <button>Step &#9654;</button>
-  <div class="feedback-shift-register" data-bit-width="8" style="width: 600px; height: 90px;"></div>
-  <p>Now let's see how to make a PRNG out of this.</p>
-  <hr>
+    <h2>Feeding back the output to input</h2>
+    <p>Consider what would happen if in the example above we connected the <code>output</code> to <code>input</code>. This has become a ring buffer.</p>
+    <button>Step &#9654;</button>
+    <div class="feedback-shift-register" data-bit-width="8" style="width: 600px; height: 90px;"></div>
+    <p>Now let's see how to make a PRNG out of this.</p>
+    <hr>
 
-  <h2>Linear Feedback Shift Register</h2>
-  <p>In the example above we connected <code>output</code> to <code>input</code>, passing bits unmodified around again and again. The difference with a LFSR is that we apply a linear function to the internal state, i.e. <code>f(register) -> input</code>.</p>
-  <p>Choosing that <code>f</code> is tricky. <code>XOR</code> (denoted <code>&oplus;</code>) has the useful property that it can express any linear function. We use <code>&oplus;</code> to combine several bits from the register into one input bit.</p>
-  <p>Choosing which bits to tap for this function is an important parameter for a LFSR. Get it wrong and you might find your game spawns enemies in only 1 or 2 different locations instead of anywhere on the map.</p>
-  <p>If you consider the below with the state <code>0x11011000010110</code>, then for the same tap set it will always produce a particular next state. If you choose the tap bits badly you might find that this new state is the same state, or that the next one is. This is called the cycle length: the number of outputs before the generator produces the same output. For well chosen taps and a state of <code>b bits</code>, the cycle length can be <code>2<sup>b</sup></code>. But it could also be 1 or 2.</p>
+    <h2>Linear Feedback Shift Register</h2>
+    <p>In the example above we connected <code>output</code> to <code>input</code>, passing bits unmodified around again and again. The difference with a LFSR is that we apply a linear function to the internal state, i.e. <code>f(register) -> input</code>.</p>
+    <p>Choosing that <code>f</code> is tricky. <code>XOR</code> (denoted <code>&oplus;</code>) has the useful property that it can express any linear function. We use <code>&oplus;</code> to combine several bits from the register into one input bit.</p>
+    <p>Choosing which bits to tap for this function is an important parameter for a LFSR. Get it wrong and you might find your game spawns enemies in only 1 or 2 different locations instead of anywhere on the map.</p>
+    <p>If you consider the below with the state <code>0x11011000010110</code>, then for the same tap set it will always produce a particular next state. If you choose the tap bits badly you might find that this new state is the same state, or that the next one is. This is called the cycle length: the number of outputs before the generator produces the same output. For well chosen taps and a state of <code>b bits</code>, the cycle length can be <code>2<sup>b</sup></code>. But it could also be 1 or 2.</p>
 
-  <div class="lfsr" data-bit-width="14" style="width: 960px; height: 180px;"></div>
-  <p>Cycle length: <code class="lfsr-cycle-length">???</code></p>
-  <p>Feedback polynomial: <code class="lfsr-feedback-polynomial">
-    <i>x</i><sup>16</sup> +
-    <i>x</i><sup>14</sup> +
-    <i>x</i><sup>13</sup> +
-    <i>x</i><sup>11</sup> +
-    1
-  </code></p>
-  <canvas class="inputs-noise-plot" id="inputs-noise-lcg" width="300" height="225" data-plot-name="LFSR Noise Plot"></canvas>
-  <!--<canvas class="inputs-noise-coord-plot" id="inputs-noise-coord-lcg" width="300" height="325" data-plot-name="LFSR Coordinate Plot"></canvas>-->
-  <hr>
+    <div class="lfsr" data-bit-width="14" style="width: 905px; height: 180px;"></div>
+    <p>Cycle length: <code class="lfsr-cycle-length">???</code></p>
+    <p>Feedback polynomial: <code class="lfsr-feedback-polynomial"></code></p>
+    <canvas class="inputs-noise-plot" id="inputs-noise-lcg" width="300" height="225" data-plot-name="LFSR Noise Plot"></canvas>
+    <!--<canvas class="inputs-noise-coord-plot" id="inputs-noise-coord-lcg" width="300" height="325" data-plot-name="LFSR Coordinate Plot"></canvas>-->
+    <hr>
+  </div>
 </body>
 </html>
