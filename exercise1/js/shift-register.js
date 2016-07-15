@@ -54,7 +54,8 @@ ShiftRegister.prototype.newBit = function newBit(bit_index, xor_enabled) {
   // X coordinates: left, centre, right
   bit.lx = bit.size * (1 + bit.index)
   if (_self.bits_with_arrows) {
-    bit.lx *= 2
+    // If arrows between bits, we want bit.size spacing between each bit.
+    bit.lx += bit.size * bit.index
   }
   bit.cx = bit.lx + bit.size / 2
   bit.rx = bit.lx + bit.size
