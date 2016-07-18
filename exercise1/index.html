@@ -16,13 +16,21 @@
   <script src="js/lfsr.js"></script>
   <script src="js/lfsr-headless.js"></script>
   <script>
-  var shift_register, shift_register_bits_with_arrows, feedback_shift_register
+  var shift_registers = [], shift_register_bits_with_arrows, feedback_shift_register
   jQuery(document).ready(function () {
     d3.selectAll(".shift-register").select(function () {
       var $this = $(this)
       var bit_width = parseInt($this.attr("data-bit-width"))
       var bits_with_arrows = !!$this.attr("data-bits-with-arrows")
-      shift_register = new ShiftRegister(this, bit_width, bits_with_arrows)
+      var in_out_with_values = !!$this.attr("data-in-out-with-values")
+      var play = !!$this.attr("data-play")
+      var shift_register_i = new ShiftRegister(this, bit_width, bits_with_arrows, in_out_with_values)
+      if (play) {
+        setInterval(function () {
+          shift_register_i.tick()
+        }, 2000)
+      }
+      shift_registers.push(shift_register_i)
     })
     d3.select(".feedback-shift-register").select(function () {
       var $this = $(this)
@@ -81,13 +89,41 @@
     <p><b>To learn more about Pseudo-random Number Generation, we're going to take a look at a relatively simple algorithm for it.</b></p>
     <hr>
 
-    <h2>Shift Registers</h2>
-    <p>If you've done hardware you may well recognise the diagram below as a Shift Register. If not, think of it as a fixed-size buffer for bits. On a <code>clock signal</code>, 1 bit goes <code>out</code> on the right and 1 bit goes <code>in</code> on the left. As such it's a FIFO buffer for bits.</p>
-    <button>Step &#9654;</button>
-    <div class="shift-register" data-bit-width="8" style="width: 600px; height: 70px;"></div>
+    <h2>Flip flops</h2>
+    <p>A flip flop is a memory element that stores 1 bit of information. A single True/False, 0/1 value. A single one can be useful as a boolean, or we can use several of them to store things like 32-bit integers.</p>
 
-    <p><b>N.B.</b> Each black box represents a flipflop, a hardware element able to store one bit. The line of several next to each other is a shorthand for this:</p>
-    <div class="shift-register" data-bit-width="4" data-bits-with-arrows="true" style="width: 600px; height: 70px;"></div>
+    <div class="shift-register" data-bit-width="1" data-bits-with-arrows="true" data-in-out-with-values="true" data-play="true" style="width: 260px; height: 70px;"></div>
+    <p>In this exercise we'll use a chain of flipflops to create a low-quality Pseudo-Random Number Generator. To begin with, let's consider the flip flop above. It has an atomic <b>Step Operation</b> that works like this:</p>
+    <ul>
+      <li>The flip-flop current value is emitted on the <code>out</code> channel.</li>
+      <li>The flip-flop takes a new value from the <code>in</code> channel.</li>
+      <li>As it is an atomic operation, these happen simultaneously.</li>
+    </ul>
+    <p>We can depict this much more tersely:</p>
+<pre><b>Step Operation</b>
+bit &rarr; out
+in &rarr; bit</pre>
+
+    <p>Now let's consider several of these flipflops chained together. Each step, each flipflop emits the current value and takes a new one.</p>
+<pre><b>Step Operation</b>
+bit<sub>4</sub> &rarr; out
+bit<sub>3</sub> &rarr; bit<sub>4</sub>
+bit<sub>2</sub> &rarr; bit<sub>3</sub>
+bit<sub>1</sub> &rarr; bit<sub>2</sub>
+in &rarr; bit<sub>1</sub></pre>
+
+    <div class="shift-register" data-bit-width="4" data-bits-with-arrows="true" data-in-out-with-values="true" data-play="true" style="width: 640px; height: 70px;"></div>
+
+    <h2>Shift Registers</h2>
+    <p>If you've done hardware you might recognise this as a Shift Register. If not, think of it as a fixed-size buffer for bits. Each <b>step operation</b>, 1 bit goes <code>out</code> on the right and 1 bit goes <code>in</code> on the left. As such it's a FIFO buffer for bits.</p>
+    <p>As shorthand we tend to omit the arrows between sequence of flipflops, like this:</p>
+    <div class="shift-register" data-bit-width="8" data-in-out-with-values="true" data-play="true" style="width: 680px; height: 70px;"></div>
+
+    <p>The bit movements here can be expressed as:</p>
+<pre>bit<sub>max</sub> &rarr; out
+bit<sub>n &lt; max</sub> &rarr; bit<sub>n+1</sub>
+in &rarr; bit<sub>1</sub></pre>
+
     <p>The input bits can come from anywhere &amp; output bits can go anywhere. This is merely a component in a system. These are commonly used for converting between serial and parallel interfaces.</p>
     <hr>
 
@@ -95,14 +131,49 @@
     <p>Consider what would happen if in the example above we connected the <code>output</code> to <code>input</code>. This has become a ring buffer.</p>
     <button>Step &#9654;</button>
     <div class="feedback-shift-register" data-bit-width="8" style="width: 600px; height: 90px;"></div>
+<pre>bit<sub>max</sub> &rarr; feedback
+bit<sub>n &lt; max</sub> &rarr; bit<sub>n+1</sub>
+feedback &rarr; bit<sub>1</sub></pre>
+    <p>However this expression is becoming quite unwieldy. Instead we can express the feedback as a polynomial on GF(2). We represent feedback as a summation of terms, where <code>x<sup>n</sup></code> represents the <code>n</code>th bit. The feedback, being a single bit, is then <code>modulo 2</code> this polynomial. This is equivalent to the <code>XOR</code> expression.</p>
+<pre>x<sup>8</sup></pre>
+
     <p>Now let's see how to make a PRNG out of this.</p>
     <hr>
 
     <h2>Linear Feedback Shift Register</h2>
     <p>In the example above we connected <code>output</code> to <code>input</code>, passing bits unmodified around again and again. The difference with a LFSR is that we apply a linear function to the internal state, i.e. <code>f(register) -> input</code>.</p>
-    <p>Choosing that <code>f</code> is tricky. <code>XOR</code> (denoted <code>&oplus;</code>) has the useful property that it can express any linear function. We use <code>&oplus;</code> to combine several bits from the register into one input bit.</p>
+    <table>
+      <thead>
+        <tr>
+          <th colspan="3">XOR Truth Table</th>
+        </tr>
+        <tr>
+          <th style="font-size: 24px;">&oplus;</th>
+          <th>0</th>
+          <th>1</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th>0</th>
+          <td style="text-align: center;">0</td>
+          <td style="text-align: center;">1</td>
+        </tr>
+        <tr>
+          <th>1</th>
+          <td style="text-align: center;">1</td>
+          <td style="text-align: center;">0</td>
+        </tr>
+      </tbody>
+    </table>
+    <p><code>XOR</code> (denoted <code>&oplus;</code>) operations can be used to construct any linear function. We use <code>&oplus;</code> to combine several bits from the register into one input bit. Choosing that linear function is tricky.</p>
     <p>Choosing which bits to tap for this function is an important parameter for a LFSR. Get it wrong and you might find your game spawns enemies in only 1 or 2 different locations instead of anywhere on the map.</p>
     <p>If you consider the below with the state <code>0x11011000010110</code>, then for the same tap set it will always produce a particular next state. If you choose the tap bits badly you might find that this new state is the same state, or that the next one is. This is called the cycle length: the number of outputs before the generator produces the same output. For well chosen taps and a state of <code>b bits</code>, the cycle length can be <code>2<sup>b</sup></code>. But it could also be 1 or 2.</p>
+
+<pre>bit<sub>max</sub> &rarr; feedback
+bit<sub>n &isin; taps</sub> &oplus; feedback &rarr; feedback
+bit<sub>n &lt; max</sub> &rarr; bit<sub>n+1</sub>
+feedback &rarr; bit<sub>1</sub></pre>
 
     <div class="lfsr" data-bit-width="14" style="width: 905px; height: 180px;"></div>
     <p>Cycle length: <code class="lfsr-cycle-length">???</code></p>

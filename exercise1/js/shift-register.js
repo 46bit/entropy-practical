@@ -1,9 +1,10 @@
-var ShiftRegister = function(domContainer, bit_width, bits_with_arrows) {
+var ShiftRegister = function(domContainer, bit_width, bits_with_arrows, in_out_with_values) {
   var _self = this
 
   _self.domContainer = domContainer
   _self.bit_width = bit_width
   _self.bits_with_arrows = !!bits_with_arrows
+  _self.in_out_with_values = !!in_out_with_values
 
   _self.container = d3.select(_self.domContainer)
   _self.$container = $(_self.domContainer)
@@ -20,7 +21,8 @@ var ShiftRegister = function(domContainer, bit_width, bits_with_arrows) {
 
   _self.dimensions = {
     "bit_size": 60,
-    "arrowhead_length": 12
+    "arrowhead_length": 12,
+    "channel_bit_radius": 10
   }
 
   _self.initMachine()
@@ -52,7 +54,7 @@ ShiftRegister.prototype.newBit = function newBit(bit_index, xor_enabled) {
   bit.value = (Math.random() >= 0.5) ? 1 : 0
 
   // X coordinates: left, centre, right
-  bit.lx = bit.size * (1 + bit.index)
+  bit.lx = bit.size * (2 + bit.index)
   if (_self.bits_with_arrows) {
     // If arrows between bits, we want bit.size spacing between each bit.
     bit.lx += bit.size * bit.index
@@ -174,6 +176,21 @@ ShiftRegister.prototype.drawInOutArrows = function drawInOutArrows() {
       .attr("y", (_self.bits[0].ty + _self.bits[0].cy) / 2)
       .attr("text-anchor", "start")
       .text("in")
+  _self.in_arrow.bit_value = (Math.random() >= 0.5) ? 1 : 0
+  if (_self.in_out_with_values) {
+    _self.in_arrow.bit_circle = _self.fore_space.append("circle")
+      .attr("class", _self.bits[0].class + " channel_bit_circle")
+      .attr("cx", _self.in_arrow.lx - _self.dimensions.channel_bit_radius)
+      .attr("cy", _self.in_arrow.y)
+      .attr("r", _self.dimensions.channel_bit_radius)
+    _self.in_arrow.bit_text = _self.fore_space.append("text")
+      .attr("class", _self.bits[0].class + " channel_bit_text")
+      .attr("x", _self.in_arrow.lx - _self.dimensions.channel_bit_radius)
+      .attr("y", _self.in_arrow.y)
+      .attr("dy", 6)
+      .attr("text-anchor", "middle")
+      .text(_self.in_arrow.bit_value)
+  }
 
   var final_bit = _self.bits[_self.bits.length - 1]
   _self.out_arrow = {
@@ -193,29 +210,50 @@ ShiftRegister.prototype.drawInOutArrows = function drawInOutArrows() {
       .attr("y", (final_bit.ty + final_bit.cy) / 2)
       .attr("text-anchor", "end")
       .text("out")
+  _self.out_arrow.bit_value = (Math.random() >= 0.5) ? 1 : 0
+  if (_self.in_out_with_values) {
+    _self.out_arrow.bit_circle = _self.fore_space.append("circle")
+      .attr("class", _self.bits[0].class + " channel_bit_circle")
+      .attr("cx", _self.out_arrow.rx+ _self.dimensions.arrowhead_length - 1 + _self.dimensions.channel_bit_radius)
+      .attr("cy", _self.out_arrow.y)
+      .attr("r", _self.dimensions.channel_bit_radius)
+    _self.out_arrow.bit_text = _self.fore_space.append("text")
+      .attr("class", _self.bits[0].class + " channel_bit_text")
+      .attr("x", _self.out_arrow.rx + _self.dimensions.arrowhead_length - 1 + _self.dimensions.channel_bit_radius)
+      .attr("y", _self.out_arrow.y)
+      .attr("dy", 6)
+      .attr("text-anchor", "middle")
+      .text(_self.out_arrow.bit_value)
+  }
 }
 
 ShiftRegister.prototype.tick = function tick() {
   var _self = this
 
+  _self.rear_space.attr("class", "rear_space ticking")
+  setTimeout(function () {
+    _self.rear_space.attr("class", "rear_space")
+  }, 500)
+
+  _self.out_arrow.bit_value = _self.bits[_self.bits.length - 1].value
+  if (_self.in_out_with_values) {
+    _self.out_arrow.bit_text.text(_self.out_arrow.bit_value)
+  }
+
   for (var i = _self.bits.length - 1; i >= 0; i--) {
     var bit = _self.bits[i],
-        source_bit_value = (i > 0) ? _self.bits[i-1].value : ((Math.random() >= 0.5) ? 1 : 0)
+        source_bit_value = (i > 0) ? _self.bits[i-1].value : _self.in_arrow.bit_value
 
     bit.value = source_bit_value
     bit.elements.register_text
       .text(bit.value)
-    /*bit.elements.register_text
-      .transition()
-      .attr("x", bit.cx + _self.dimensions.bit_size)*/
-    /*bit.elements.register_circle
-      .transition()
-      .attr("cx", (i == _self.bits.length - 1) ? _self.width + 100 : bit.cx + _self.dimensions.bit_size)
-      .style("opacity", (i == _self.bits.length - 1) ? 0.5 : 1)
-    bit.elements.register_text
-      .transition()
-      .attr("x", (i == _self.bits.length - 1) ? _self.width + 100 : bit.cx + _self.dimensions.bit_size)
-      .style("opacity", (i == _self.bits.length - 1) ? 0.5 : 1)*/
+  }
+
+  // To ensure for the demo that all flipflops aren't the same value, use the negation of
+  // the out value rather than a random value.
+  _self.in_arrow.bit_value = _self.out_arrow.bit_value == 1 ? 0 : 1
+  if (_self.in_out_with_values) {
+    _self.in_arrow.bit_text.text(_self.in_arrow.bit_value)
   }
 }
 

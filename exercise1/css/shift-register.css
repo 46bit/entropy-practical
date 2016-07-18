@@ -23,9 +23,36 @@
 marker#arrowhead {
   fill: purple;
 }
+.ticking marker#arrowhead {
+  fill: red;
+}
+.ticking #arrowhead {
+  fill: red;
+}
+.ticking marker {
+  fill: red;
+}
+.ticking .channel_label,
+.ticking marker#arrowhead,
+.ticking .arrow,
+.ticking .hint_circle {
+  fill: red !important;
+  stroke: red !important;
+}
+
 .shift-register .channel_label {
   fill: purple;
   font: bold 16px monospace;
+}
+.shift-register .channel_bit_circle {
+  pointer-events: none;
+  stroke: lightblue;
+  stroke-width: 1;
+  fill: azure;
+}
+.shift-register .channel_bit_text {
+  pointer-events: none;
+  font: bold 18px monospace;
 }
 
 .shift-register .fore_space {}
