@@ -32,12 +32,14 @@ marker#arrowhead {
 .ticking marker {
   fill: red;
 }
-.ticking .channel_label,
-.ticking marker#arrowhead,
 .ticking .arrow,
 .ticking .hint_circle {
-  fill: red !important;
   stroke: red !important;
+}
+.ticking .channel_label,
+.ticking marker#arrowhead,
+.ticking .hint_circle {
+  fill: red !important;
 }
 
 .shift-register .channel_label {

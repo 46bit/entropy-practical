@@ -16,7 +16,9 @@
   <script src="js/lfsr.js"></script>
   <script src="js/lfsr-headless.js"></script>
   <script>
-  var shift_registers = [], shift_register_bits_with_arrows, feedback_shift_register
+  var shift_registers = [],
+      shift_register_bits_with_arrows,
+      feedback_shift_register
   jQuery(document).ready(function () {
     d3.selectAll(".shift-register").select(function () {
       var $this = $(this)
@@ -28,7 +30,7 @@
       if (play) {
         setInterval(function () {
           shift_register_i.tick()
-        }, 2000)
+        }, 1000)
       }
       shift_registers.push(shift_register_i)
     })
@@ -36,6 +38,9 @@
       var $this = $(this)
       var bit_width = parseInt($this.attr("data-bit-width"))
       feedback_shift_register = new FeedbackShiftRegister(this, bit_width)
+      setInterval(function () {
+        feedback_shift_register.tick()
+      }, 1000)
     })
   })
 
@@ -100,29 +105,21 @@
       <li>As it is an atomic operation, these happen simultaneously.</li>
     </ul>
     <p>We can depict this much more tersely:</p>
-<pre><b>Step Operation</b>
-bit &rarr; out
-in &rarr; bit</pre>
-
-    <p>Now let's consider several of these flipflops chained together. Each step, each flipflop emits the current value and takes a new one.</p>
-<pre><b>Step Operation</b>
-bit<sub>4</sub> &rarr; out
-bit<sub>3</sub> &rarr; bit<sub>4</sub>
-bit<sub>2</sub> &rarr; bit<sub>3</sub>
-bit<sub>1</sub> &rarr; bit<sub>2</sub>
-in &rarr; bit<sub>1</sub></pre>
-
-    <div class="shift-register" data-bit-width="4" data-bits-with-arrows="true" data-in-out-with-values="true" data-play="true" style="width: 640px; height: 70px;"></div>
+<pre><b>Atomic Step Operation</b>
+flipflop &rarr; out
+in &rarr; flipflop</pre>
 
     <h2>Shift Registers</h2>
-    <p>If you've done hardware you might recognise this as a Shift Register. If not, think of it as a fixed-size buffer for bits. Each <b>step operation</b>, 1 bit goes <code>out</code> on the right and 1 bit goes <code>in</code> on the left. As such it's a FIFO buffer for bits.</p>
-    <p>As shorthand we tend to omit the arrows between sequence of flipflops, like this:</p>
+    <p>Now let's consider several of these flipflops chained together. Each step, each flipflop emits the current value and takes a new one. As shorthand we tend to omit the arrows between sequences of flipflops.</p>
     <div class="shift-register" data-bit-width="8" data-in-out-with-values="true" data-play="true" style="width: 680px; height: 70px;"></div>
 
+    <p>If you've done hardware you might recognise this as a Shift Register. If not, think of it as a fixed-size buffer for bits. Each <b>step operation</b>, 1 bit goes <code>out</code> on the right and 1 bit goes <code>in</code> on the left.</p>
+
     <p>The bit movements here can be expressed as:</p>
-<pre>bit<sub>max</sub> &rarr; out
-bit<sub>n &lt; max</sub> &rarr; bit<sub>n+1</sub>
-in &rarr; bit<sub>1</sub></pre>
+<pre><b>Atomic Step Operation</b>
+flipflop<sub>8</sub> &rarr; out
+flipflop<sub>n &lt; 8</sub> &rarr; flipflop<sub>n+1</sub>
+in &rarr; flipflop<sub>1</sub></pre>
 
     <p>The input bits can come from anywhere &amp; output bits can go anywhere. This is merely a component in a system. These are commonly used for converting between serial and parallel interfaces.</p>
     <hr>
@@ -131,9 +128,10 @@ in &rarr; bit<sub>1</sub></pre>
     <p>Consider what would happen if in the example above we connected the <code>output</code> to <code>input</code>. This has become a ring buffer.</p>
     <button>Step &#9654;</button>
     <div class="feedback-shift-register" data-bit-width="8" style="width: 600px; height: 90px;"></div>
-<pre>bit<sub>max</sub> &rarr; feedback
-bit<sub>n &lt; max</sub> &rarr; bit<sub>n+1</sub>
-feedback &rarr; bit<sub>1</sub></pre>
+<pre><b>Atomic Step Operation</b>
+flipflop<sub>8</sub> &rarr; feedback
+flipflop<sub>n &lt; 8</sub> &rarr; flipflop<sub>n+1</sub>
+feedback &rarr; flipflop<sub>1</sub></pre>
     <p>However this expression is becoming quite unwieldy. Instead we can express the feedback as a polynomial on GF(2). We represent feedback as a summation of terms, where <code>x<sup>n</sup></code> represents the <code>n</code>th bit. The feedback, being a single bit, is then <code>modulo 2</code> this polynomial. This is equivalent to the <code>XOR</code> expression.</p>
 <pre>x<sup>8</sup></pre>
 
@@ -170,7 +168,8 @@ feedback &rarr; bit<sub>1</sub></pre>
     <p>Choosing which bits to tap for this function is an important parameter for a LFSR. Get it wrong and you might find your game spawns enemies in only 1 or 2 different locations instead of anywhere on the map.</p>
     <p>If you consider the below with the state <code>0x11011000010110</code>, then for the same tap set it will always produce a particular next state. If you choose the tap bits badly you might find that this new state is the same state, or that the next one is. This is called the cycle length: the number of outputs before the generator produces the same output. For well chosen taps and a state of <code>b bits</code>, the cycle length can be <code>2<sup>b</sup></code>. But it could also be 1 or 2.</p>
 
-<pre>bit<sub>max</sub> &rarr; feedback
+<pre><b>Atomic Step Operation</b>
+bit<sub>max</sub> &rarr; feedback
 bit<sub>n &isin; taps</sub> &oplus; feedback &rarr; feedback
 bit<sub>n &lt; max</sub> &rarr; bit<sub>n+1</sub>
 feedback &rarr; bit<sub>1</sub></pre>

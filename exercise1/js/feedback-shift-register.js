@@ -163,11 +163,25 @@ FeedbackShiftRegister.prototype.drawInOutArrows = function drawInOutArrows() {
 FeedbackShiftRegister.prototype.tick = function tick() {
   var _self = this
 
-  for (var i = _self.bits.length - 1; i >= 0; i--) {
+  _self.rear_space.attr("class", "rear_space ticking")
+  setTimeout(function () {
+    _self.rear_space.attr("class", "rear_space")
+  }, 500)
+
+  var feedback = _self.bits[_self.bits.length - 1].value
+  // Skip the last element.
+  for (var i = _self.bits.length - 2; i >= 0; i--) {
+    _self.bits[i+1].value = _self.bits[i].value
+    _self.bits[i+1].elements.register_text.text(_self.bits[i+1].value)
+  }
+  _self.bits[0].value = feedback
+  _self.bits[0].elements.register_text.text(_self.bits[0].value)
+
+  /*for (var i = _self.bits.length - 1; i >= 0; i--) {
     var bit = _self.bits[i]
-    /*bit.elements.register_text
-      .transition()
-      .attr("x", bit.cx + _self.dimensions.bit_size)*/
+    //bit.elements.register_text
+    //  .transition()
+    //  .attr("x", bit.cx + _self.dimensions.bit_size)
     bit.elements.register_circle
       .transition()
       .attr("cx", (i == _self.bits.length - 1) ? _self.width + 100 : bit.cx + _self.dimensions.bit_size)
@@ -176,7 +190,7 @@ FeedbackShiftRegister.prototype.tick = function tick() {
       .transition()
       .attr("x", (i == _self.bits.length - 1) ? _self.width + 100 : bit.cx + _self.dimensions.bit_size)
       .style("opacity", (i == _self.bits.length - 1) ? 0.5 : 1)
-  }
+  }*/
 }
 
 FeedbackShiftRegister.prototype.polyline_points = function polyline_points(points) {
