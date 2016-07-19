@@ -1,5 +1,5 @@
 digraph G {
-  label="An arbitrary PRNG";
+  label="The `primes mod 10` PRNG";
   labeljust=l;
   labelloc=t;
 
@@ -10,18 +10,18 @@ digraph G {
     label="Internal state";
 
     rank=same {
-      "seed" [shape=circle];
+      "13" [shape=circle];
       "…" [shape=none];
 
       node [shape=rect];
-      "seed" -> "state₁" -> "state₂" -> "state₃" -> "…";
+      "13" -> "17" -> "19" -> "23" -> "…";
     }
   }
 
   subgraph public {
     node [shape=circle];
-    "state₁" -> "out₁";
-    "state₂" -> "out₂";
-    "state₃" -> "out₃";
+    "17" -> "7";
+    "19" -> "9";
+    "23" -> "3";
   }
 }
