@@ -141,11 +141,11 @@ ShiftRegister.prototype.drawBitArrow = function drawBitArrow(left_bit, right_bit
 ShiftRegister.prototype.drawBitCircle = function drawBitCircle(bit) {
   var _self = this
 
-  bit.elements.register_circle = bit.elements.register_text_g.append("circle")
+  /*bit.elements.register_circle = bit.elements.register_text_g.append("circle")
     .attr("class", bit.class + " register_circle")
     .attr("cx", bit.cx)
     .attr("cy", bit.cy)
-    .attr("r", bit.size / 4)
+    .attr("r", bit.size / 4)*/
 
   bit.elements.register_text = bit.elements.register_text_g.append("text")
     .attr("class", bit.class + " register_text")
