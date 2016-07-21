@@ -1,0 +1,142 @@
+#!/usr/bin/env python
+
+import os, sys, readchar, random, time, socket
+from threading import Timer, Thread, Event
+
+shell_is_interactive = os.isatty(sys.stdout.fileno())
+
+_banner = """\
+############################################
+***       THE HEXADECIMAL LOTTERY        ***
+***        Reward doubles hourly!        ***
+############################################
+
+*** Today is HOUR %d
+    It's $%d a play
+    For a $%d jackpot!
+"""
+
+def banner(hour):
+  return _banner % (hour, 2**hour, 2**(hour+10))
+
+print banner(5)
+
+# if shell_is_interactive:
+#   sys.stdout.write(":: Would you like to play? [Y/n] ")
+#   c = readchar.readchar()
+#   print c
+#   if c.lower() == "n":
+#     print "   OK. See you next time!"
+#     sys.exit(0)
+
+# Get data from CSPRNG Numbers Server.
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(("127.0.0.1", 4646))
+data = s.recv(4)
+if len(data) == 0:
+  print ":: Another game was already taking place. Please try again in a moment."
+  sys.exit(1)
+result_u32 = 0
+for b in data:
+  result_u32 = (result_u32 << 8) | ord(b)
+
+print """\
+        7 6 5 4 3 2 1 0
+TO WIN  f f f f f f f f\
+"""
+
+class ReelMachine(object):
+  def __init__(self, result_u32, cycles_before_result=1):
+    self.result_u32 = result_u32
+    self.result_reels = self.u32_to_reels(result_u32)
+    self.cycles_before_result = cycles_before_result
+
+    # The start point does not require cryptographic security. It is purely a UI element
+    # and entirely decoupled from the result stage.
+    start_u32 = random.randint(0, 0xffffffff) # inclusive
+    self.current_reels = self.u32_to_reels(start_u32)
+    self.cycle_step = 0
+    self.result_reached = False
+
+  def u32_to_reels(self, u32_value):
+    return [(u32_value >> (reel*4)) & 0xf for reel in range(0, 8)]
+
+  def tick(self):
+    if self.cycles_before_result > 0:
+      self.tick_cycle()
+    else:
+      self.tick_result()
+
+    return not self.result_reached
+
+  def tick_cycle(self):
+    for reel in range(0, 8):
+      self.current_reels[reel] += 1
+      self.current_reels[reel] %= 16
+
+    self.cycle_step += 1
+    if self.cycle_step == 16:
+      self.cycle_step = 0
+      self.cycles_before_result -= 1
+
+  def tick_result(self):
+    self.result_reached = True
+    for reel in range(0, 8):
+      if self.current_reels[reel] != self.result_reels[reel]:
+        self.current_reels[reel] += 1
+        self.current_reels[reel] %= 16
+        self.result_reached = False
+
+  def __str__(self):
+    s = ""
+    for reel in range(0, 8):
+      s += "%x " % self.current_reels[reel]
+    return s
+
+  def won(self):
+    return self.result_u32 == 0xffffffff
+
+# http://stackoverflow.com/a/12435256
+class TickThread(Thread):
+  def __init__(self, tick_callback, tick_duration):
+    Thread.__init__(self)
+    self.stopped = Event()
+    self.tick_callback = tick_callback
+    self.tick_duration = tick_duration
+
+  def run(self):
+    while not self.stopped.wait(self.tick_duration):
+      if not self.tick_callback(): break
+
+# @TODO: From CSPRNG.
+rm = ReelMachine(result_u32, 2)
+
+if shell_is_interactive:
+  def tick():
+    result_not_reached = rm.tick()
+    # Print current reels.
+    sys.stdout.write("\rDRAWN   " + str(rm))
+    sys.stdout.flush()
+    # Pass through return value.
+    return result_not_reached
+
+  thread = TickThread(tick, 0.1)
+  thread.start()
+  thread.join()
+
+  # Sleep for half a second, so people see the drawing end.
+  time.sleep(0.5)
+else:
+  s = "DRAWN   "
+  for reel in range(0, 8):
+    s += "%x " % rm.result_reels[reel]
+  sys.stdout.write(s)
+
+print "\n"
+if rm.won():
+  print ":: YOU WON! Congratulations."
+  print "   The HEXADECIMAL LOTTERY regrets it cannot pay your winnings."
+  print "   The lottery has become insolvent from an unexpected volume of wins."
+  print "   Instead, have a cute rabbit. https://www.flickr.com/photos/hepp/214184243/"
+else:
+  print ":: You didn't win! :-("

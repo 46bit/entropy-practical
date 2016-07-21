@@ -1,0 +1,72 @@
+#!/usr/bin/env python
+
+import os, sys, readchar, random, time, socket
+from threading import Timer, Thread, Event
+from Tyche import FortunaGenerator
+# @TODO: ensure PyCrypto installed?
+
+class CSPRNGWrapper(object):
+  def __init__(self, seed):
+    # @TODO: Seed new CSPRNG.
+    self.fortuna = FortunaGenerator()
+    self.fortuna.reseed(seed)
+    self.tick_count = 0
+    # Ensures current_value is not unset.
+    self.tick()
+
+  def tick(self):
+    # Generate 32-bits from the CSPRNG as the current value.
+    self._current_value = self.fortuna.pseudoRandomData(4)
+    self.current_value_used = False
+    self.tick_count += 1
+    print "CSPRNGWrapper.tick %d" % self.tick_count
+
+  # Prevent each tick's current_value being given out more than once.
+  def get_current_value(self):
+    if self.current_value_used:
+      return False
+    self.current_value_used = True
+    return self._current_value
+
+# @TODO: Deduplicate with hex-lottery one
+# http://stackoverflow.com/a/12435256
+class TickThread(Thread):
+  def __init__(self, tick_callback, tick_duration):
+    Thread.__init__(self)
+    self.stopped = Event()
+    self.tick_callback = tick_callback
+    self.tick_duration = tick_duration
+
+  def run(self):
+    while not self.stopped.wait(self.tick_duration):
+      if self.tick_callback() is False: break
+
+class NumberServerThread(Thread):
+  def __init__(self, csprng_wrapper):
+    Thread.__init__(self)
+    self.csprng_wrapper = csprng_wrapper
+
+  def run(self):
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.bind(("127.0.0.1", 4646))
+    s.listen(5)
+    while True:
+      client, address = s.accept()
+      csprng_current_value = self.csprng_wrapper.get_current_value()
+      # Only send any data before closing if the current value is unused.
+      if csprng_current_value is not False:
+        client.send(csprng_current_value)
+      client.close()
+
+# @TODO: Adopt microtime.
+seed = "5" # microtime
+csprng_wrapper = CSPRNGWrapper(seed)
+
+tick_thread = TickThread(csprng_wrapper.tick, 1)
+tick_thread.start()
+
+number_server_thread = NumberServerThread(csprng_wrapper)
+number_server_thread.start()
+
+tick_thread.join()
+number_server_thread.join()
