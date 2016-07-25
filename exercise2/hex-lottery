@@ -1,25 +1,37 @@
 #!/usr/bin/env python
 
-import os, sys, readchar, random, time, socket
+import os, sys, readchar, random, time, socket, string, struct
 from threading import Timer, Thread, Event
 
 shell_is_interactive = os.isatty(sys.stdout.fileno())
 
+# Get data from CSPRNG Numbers Server.
+# N.B. By choice I would get this after the symbols have been chosen by the user,
+# for no particularly strong reason, but it would make timing harder for students.
+s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+s.connect(("127.0.0.1", 4646))
+packer = struct.Struct('I I')
+data = s.recv(packer.size)
+if len(data) == 0:
+  print ":: Another game was already taking place. Please try again in a moment."
+  sys.exit(1)
+result_u32, tick_count_u32 = packer.unpack(data)
+
 _banner = """\
 ############################################
 ***       THE HEXADECIMAL LOTTERY        ***
-***        Reward doubles hourly!        ***
+***     Reward doubles every minute!     ***
 ############################################
 
-*** Today is HOUR %d
-    It's $%d a play
-    For a $%d jackpot!
+*** This is MINUTE {}
+    It's ${:,} a play
+    For a ${:,} jackpot!
 """
 
-def banner(hour):
-  return _banner % (hour, 2**hour, 2**(hour+10))
+def banner(minute):
+  return _banner.format(minute, 2**minute, 2**(minute+10))
 
-print banner(5)
+print banner(tick_count_u32 / 60)
 
 # if shell_is_interactive:
 #   sys.stdout.write(":: Would you like to play? [Y/n] ")
@@ -29,26 +41,37 @@ print banner(5)
 #     print "   OK. See you next time!"
 #     sys.exit(0)
 
-# Get data from CSPRNG Numbers Server.
-s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-s.connect(("127.0.0.1", 4646))
-data = s.recv(4)
-if len(data) == 0:
-  print ":: Another game was already taking place. Please try again in a moment."
-  sys.exit(1)
-result_u32 = 0
-for b in data:
-  result_u32 = (result_u32 << 8) | ord(b)
+# Have user pick their reel symbols.
+hex09af = string.hexdigits[:16]
+if len(sys.argv) >= 2:
+  chosen_reels = [hex09af.index(c) for c in sys.argv[1]]
+  print(":: You chose to play {}\n".format(sys.argv[1]))
+else:
+  sys.stdout.write(":: Which 8 symbols do you want to pick? [ffffffff] ")
+  chosen_reels = []
+  while len(chosen_reels) < 8:
+    c = readchar.readchar()
+    if c in hex09af:
+      chosen_reels.append(hex09af.index(c))
+      sys.stdout.write(c)
+      sys.stdout.flush()
+    elif c.isspace() and len(chosen_reels) == 0:
+      chosen_reels = [15] * 8
+  print "\n"
 
-print """\
-        7 6 5 4 3 2 1 0
-TO WIN  f f f f f f f f\
-"""
+# if shell_is_interactive:
+#   sys.stdout.write(":: Would you like to play? [Y/n] ")
+#   c = readchar.readchar()
+#   print c
+#   if c.lower() == "n":
+#     print "   OK. See you next time!"
+#     sys.exit(0)
 
 class ReelMachine(object):
-  def __init__(self, result_u32, cycles_before_result=1):
+  def __init__(self, result_u32, chosen_reels, cycles_before_result=1):
     self.result_u32 = result_u32
     self.result_reels = self.u32_to_reels(result_u32)
+    self.chosen_reels = chosen_reels
     self.cycles_before_result = cycles_before_result
 
     # The start point does not require cryptographic security. It is purely a UI element
@@ -87,14 +110,14 @@ class ReelMachine(object):
         self.current_reels[reel] %= 16
         self.result_reached = False
 
-  def __str__(self):
+  def reels_str(self, reels):
     s = ""
     for reel in range(0, 8):
-      s += "%x " % self.current_reels[reel]
+      s += "%x " % reels[reel]
     return s
 
   def won(self):
-    return self.result_u32 == 0xffffffff
+    return self.result_reels == self.chosen_reels
 
 # http://stackoverflow.com/a/12435256
 class TickThread(Thread):
@@ -109,13 +132,18 @@ class TickThread(Thread):
       if not self.tick_callback(): break
 
 # @TODO: From CSPRNG.
-rm = ReelMachine(result_u32, 2)
+rm = ReelMachine(result_u32, chosen_reels, 2)
+
+print """\
+        7 6 5 4 3 2 1 0
+TO WIN  %s\
+""" % rm.reels_str(rm.chosen_reels)
 
 if shell_is_interactive:
   def tick():
     result_not_reached = rm.tick()
     # Print current reels.
-    sys.stdout.write("\rDRAWN   " + str(rm))
+    sys.stdout.write("\rDRAWN   " + rm.reels_str(rm.current_reels))
     sys.stdout.flush()
     # Pass through return value.
     return result_not_reached

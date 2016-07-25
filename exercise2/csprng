@@ -1,22 +1,29 @@
 #!/usr/bin/env python
 
-import os, sys, readchar, random, time, socket
+import os, sys, readchar, random, time, socket, struct
 from threading import Timer, Thread, Event
 from Tyche import FortunaGenerator
+from datetime import datetime
 # @TODO: ensure PyCrypto installed?
 
+# PYTHONPATH=$PYTHONPATH:$PWD/Tyche ./csprng
+
 class CSPRNGWrapper(object):
-  def __init__(self, seed):
+  def __init__(self, seed, demo_tick_count):
     # @TODO: Seed new CSPRNG.
     self.fortuna = FortunaGenerator()
     self.fortuna.reseed(seed)
-    self.tick_count = 0
+    self.tick_count = demo_tick_count
     # Ensures current_value is not unset.
     self.tick()
 
   def tick(self):
     # Generate 32-bits from the CSPRNG as the current value.
-    self._current_value = self.fortuna.pseudoRandomData(4)
+    current_bytes = self.fortuna.pseudoRandomData(4)
+    current_value = 0
+    for i in range(4):
+      current_value = (current_value << 8) | ord(current_bytes[i])
+    self._current_value = current_value
     self.current_value_used = False
     self.tick_count += 1
     print "CSPRNGWrapper.tick %d" % self.tick_count
@@ -42,7 +49,7 @@ class TickThread(Thread):
       if self.tick_callback() is False: break
 
 class NumberServerThread(Thread):
-  def __init__(self, csprng_wrapper):
+  def __init__(self, csprng_wrapper, start_time):
     Thread.__init__(self)
     self.csprng_wrapper = csprng_wrapper
 
@@ -50,23 +57,38 @@ class NumberServerThread(Thread):
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     s.bind(("127.0.0.1", 4646))
     s.listen(5)
-    while True:
-      client, address = s.accept()
-      csprng_current_value = self.csprng_wrapper.get_current_value()
-      # Only send any data before closing if the current value is unused.
-      if csprng_current_value is not False:
-        client.send(csprng_current_value)
-      client.close()
+    try:
+      while True:
+        client, address = s.accept()
+        csprng_current_value = self.csprng_wrapper.get_current_value()
+        csprng_tick_count = self.csprng_wrapper.tick_count
 
-# @TODO: Adopt microtime.
-seed = "5" # microtime
-csprng_wrapper = CSPRNGWrapper(seed)
+        # Only send any data before closing if the current value is unused.
+        try:
+          if csprng_current_value is not False:
+            packer = struct.Struct('I I')
+            packed_data = packer.pack(csprng_current_value, csprng_tick_count)
+            client.sendall(packed_data)
+        finally:
+          client.close()
+    finally:
+      s.shutdown(1)
+      s.close()
+
+demo_start_time_backdating = random.randint(0xff, 0xff*2)
+
+start_time = int(time.time()) - demo_start_time_backdating
+seed = str(start_time)
+print "seed = %s" % seed
+csprng_wrapper = CSPRNGWrapper(seed, demo_start_time_backdating)
 
 tick_thread = TickThread(csprng_wrapper.tick, 1)
+tick_thread.daemon = True
 tick_thread.start()
 
-number_server_thread = NumberServerThread(csprng_wrapper)
+number_server_thread = NumberServerThread(csprng_wrapper, start_time)
+number_server_thread.daemon = True
 number_server_thread.start()
 
-tick_thread.join()
-number_server_thread.join()
+while True:
+  time.sleep(1)

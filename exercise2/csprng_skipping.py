@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 
-import os, sys, readchar, random, time, socket
+import os, sys, readchar, random, time, socket, string
 from threading import Timer, Thread, Event
 from Tyche import FortunaGenerator
 # @TODO: ensure PyCrypto installed?
@@ -34,9 +34,19 @@ csprng_wrapper = CSPRNGWrapper(seed)
 #  csprng_wrapper.tick()
 #  if i % 10000 == 0:
 #    print csprng_wrapper.get_current_value()
+
+def fourbytes_to_symbols(fourbytes):
+  u32_value = 0
+  for b in fourbytes:
+    u32_value = (u32_value << 8) | ord(b)
+  reels = [(u32_value >> (reel*4)) & 0xf for reel in range(0, 8)]
+  hex09af = string.hexdigits[:16]
+  return [hex09af[r] for r in reels]
+
 while True:
   csprng_wrapper.tick()
   v = csprng_wrapper.get_current_value()
+  print "#%d is %s" % (csprng_wrapper.tick_count, "".join(fourbytes_to_symbols(v)))
   if ord(v[0]) == 0xff and ord(v[1]) == 0xff and ord(v[2]) == 0xff and ord(v[3]) == 0xff:
     print csprng_wrapper.tick_count
     sys.exit(0)
