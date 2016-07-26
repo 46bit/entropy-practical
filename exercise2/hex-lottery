@@ -123,13 +123,13 @@ rm = ReelMachine(result, choice, 2)
 print """\
         7 6 5 4 3 2 1 0
 TO WIN  %s\
-""" % rm.choice
+""" % rm.choice.spaced_str()
 
 if shell_is_interactive:
   def tick():
     result_not_reached = rm.tick()
     # Print current reels.
-    sys.stdout.write("\rDRAWN   " + str(rm.current))
+    sys.stdout.write("\rDRAWN   " + rm.current.spaced_str())
     sys.stdout.flush()
     # Pass through return value.
     return result_not_reached
@@ -141,7 +141,7 @@ if shell_is_interactive:
   # Sleep for half a second, so people see the drawing end.
   time.sleep(0.5)
 else:
-  sys.stdout.write("DRAWN   " + str(rm.result))
+  sys.stdout.write("DRAWN   " + rm.result.spaced_str())
 
 print "\n"
 if rm.won():

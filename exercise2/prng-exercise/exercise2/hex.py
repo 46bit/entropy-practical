@@ -16,12 +16,12 @@ class Reels(object):
     obj.u32 = obj.u32_from_reels(reels)
     return obj
 
-  def reels_from_u32(self, u32):
+  def reels_from_u32(self, u32, joinerstr=""):
     reversed_reels = []
     for reel in range(0, 8):
       reversed_reels.append(hex09af[u32 & 0xf])
       u32 = u32 >> 4
-    return " ".join(reversed_reels[::-1])
+    return joinerstr.join(reversed_reels[::-1])
 
   def reel_from_u32(self, u32, reel_index):
     start_bit_of_reel = reel_index * 4
@@ -53,6 +53,9 @@ class Reels(object):
 
   def __str__(self):
     return self.reels_from_u32(self.u32)
+
+  def spaced_str(self):
+    return self.reels_from_u32(self.u32, " ")
 
   def __getitem__(self, reel_index):
     return self.reel_from_u32(self.u32, reel_index)
