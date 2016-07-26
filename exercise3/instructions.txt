@@ -1,0 +1,15 @@
+EXTENSION EXERCISE INSTRUCTIONS
+
+* Congratulations! You've successfully done the previous 2 exercises. If not, try asking your teacher or
+  fellow students for help understanding them. *
+
+In the [Introduction](localhost:3000/introduction.html) (@TODO: Make link work forever) we discussed
+building a PRNG from the last digit of sequential prime numbers (that is, `primes mod 10`).
+
+1. Your task is to implement this. Write a function in your favourite language (e.g. Python) that outputs
+   a pseudorandom digit starting from a provided prime.
+2. Once the primes are above 10, your function will only output 1, 3, 7 and 9. Your challenge is to map
+   this to pseudorandomly outputting any of the digits 0, ..., 15. Hint: this is an alphabet of 16 = 2^4
+   digits, and you already output from an alphabet of 4 = 2^2 digits.
+3. Now write a program that for a given sequence of outputs from (1) finds the lowest sequence of primes
+   that could have given that output. If you have lots of time left, try to adapt it for (2).
