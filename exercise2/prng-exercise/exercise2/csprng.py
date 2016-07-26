@@ -3,11 +3,8 @@ import sys, Tyche
 class Csprng(object):
   def __init__(self, seed, write_dots=False):
     self.write_dots = write_dots
-    # Seed a Fortuna instance from the Tyche package.
-    self.fortuna = Tyche.FortunaGenerator()
-    self.fortuna.reseed(str(seed))
+    self.reseed(seed)
 
-    self.tick_count = 0
     # Ensures current_value is not unset.
     self.tick()
 
@@ -22,6 +19,12 @@ class Csprng(object):
   def advance(self, ticks):
     for t in range(ticks):
       self.tick()
+
+  def reseed(self, seed):
+    # Seed a Fortuna instance from the Tyche package.
+    self.fortuna = Tyche.FortunaGenerator()
+    self.fortuna.reseed(str(seed))
+    self.tick_count = 0
 
   def bytes_to_u32(self, bs):
     u32 = 0

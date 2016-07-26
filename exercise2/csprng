@@ -37,15 +37,46 @@ class NumberServerThread(threading.Thread):
     finally:
       client.close()
 
+# Pseudorandomly (MT) assign how long ago the server was supposedly started, between 255 and 510
+# seconds. This makes it feel a little more realistic.
 demo_start_time_backdating = random.randint(0xff, 0xff*2)
 start_time = int(time.time()) - demo_start_time_backdating
-seed = start_time
 print "seed = %s" % seed
 
-csprng = exercise2.CsprngSingleAccess(seed, write_dots=True)
+csprng = exercise2.CsprngSingleAccess(start_time, write_dots=True)
 csprng.advance(demo_start_time_backdating)
 
-tick_thread = exercise2.TickThread(csprng.tick, 1)
+def tick_detect_timejumps():
+  global csprng
+
+  # In some circumstances, the starting unix timestamp will no longer be ~tick_count seconds ago.
+  # * Time taken to schedule the next tick.
+  #   The next tick is scheduled before this one is performed, by TickThread, but this still takes
+  #   some amount of time. Thus tick_count will be slightly lower over time than the system clock.
+  # * System suspend, on an Operating System or Virtualiser level.
+  #   Both will cause a gap where time advanced and yet tick_count did not. It may not be easy to
+  #   detect the latter except by noticing time gaps, hence this fix.
+  # * Clock drift.
+  #
+  # The break the students are doing depends on the start time being ~tick_count seconds ago. Thus in
+  # all these circumstances we restart the CSPRNG with the same seed but to now have executed the correct
+  # number of ticks, current_unix_time - start_unix_time.
+  #
+  # Drawback: This occurring during a break executing may well have unfortunate side-effects, the
+  # 'jump' preventing it from correctly finding the start time. Unfortunately engineering around this
+  # issue would further negate any sense of this program intending to be secure.
+  expected_tick_count = int(time.time()) - start_time
+  performed_tick_count = csprng.tick_count
+  timejump_error = expected_tick_count - performed_tick_count
+  if abs(timejump_error) > 3:
+    sys.stdout.write("TimeJump=(%d %d %d)" % (timejump_error, expected_tick_count, performed_tick_count))
+    sys.stdout.flush()
+    csprng.reseed(start_time)
+    csprng.advance(expected_tick_count)
+  else:
+    csprng.tick()
+
+tick_thread = exercise2.TickThread(tick_detect_timejumps, 1)
 tick_thread.daemon = True
 tick_thread.start()
 
