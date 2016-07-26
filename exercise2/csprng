@@ -1,56 +1,13 @@
 #!/usr/bin/env python
 
-import os, sys, readchar, random, time, socket, struct
-from threading import Timer, Thread, Event
-from Tyche import FortunaGenerator
-from datetime import datetime
+# PYTHONPATH=$PYTHONPATH:$PWD/Tyche:$PWD/prng-exercise ./csprng
+
+import sys, random, time, socket, struct, threading, exercise2
 # @TODO: ensure PyCrypto installed?
 
-# PYTHONPATH=$PYTHONPATH:$PWD/Tyche ./csprng
-
-class CSPRNGWrapper(object):
-  def __init__(self, seed, demo_tick_count):
-    # @TODO: Seed new CSPRNG.
-    self.fortuna = FortunaGenerator()
-    self.fortuna.reseed(seed)
-    self.tick_count = demo_tick_count
-    # Ensures current_value is not unset.
-    self.tick()
-
-  def tick(self):
-    # Generate 32-bits from the CSPRNG as the current value.
-    current_bytes = self.fortuna.pseudoRandomData(4)
-    current_value = 0
-    for i in range(4):
-      current_value = (current_value << 8) | ord(current_bytes[i])
-    self._current_value = current_value
-    self.current_value_used = False
-    self.tick_count += 1
-    print "CSPRNGWrapper.tick %d" % self.tick_count
-
-  # Prevent each tick's current_value being given out more than once.
-  def get_current_value(self):
-    if self.current_value_used:
-      return False
-    self.current_value_used = True
-    return self._current_value
-
-# @TODO: Deduplicate with hex-lottery one
-# http://stackoverflow.com/a/12435256
-class TickThread(Thread):
-  def __init__(self, tick_callback, tick_duration):
-    Thread.__init__(self)
-    self.stopped = Event()
-    self.tick_callback = tick_callback
-    self.tick_duration = tick_duration
-
-  def run(self):
-    while not self.stopped.wait(self.tick_duration):
-      if self.tick_callback() is False: break
-
-class NumberServerThread(Thread):
-  def __init__(self, csprng_wrapper, start_time):
-    Thread.__init__(self)
+class NumberServerThread(threading.Thread):
+  def __init__(self, csprng_wrapper):
+    threading.Thread.__init__(self)
     self.csprng_wrapper = csprng_wrapper
 
   def run(self):
@@ -60,33 +17,39 @@ class NumberServerThread(Thread):
     try:
       while True:
         client, address = s.accept()
-        csprng_current_value = self.csprng_wrapper.get_current_value()
-        csprng_tick_count = self.csprng_wrapper.tick_count
-
-        # Only send any data before closing if the current value is unused.
-        try:
-          if csprng_current_value is not False:
-            packer = struct.Struct('I I')
-            packed_data = packer.pack(csprng_current_value, csprng_tick_count)
-            client.sendall(packed_data)
-        finally:
-          client.close()
+        sys.stdout.write("Client={}".format(address))
+        sys.stdout.flush()
+        self.serve_client(client)
     finally:
       s.shutdown(1)
       s.close()
 
+  def serve_client(self, client):
+    csprng_current_value = self.csprng_wrapper.get_current_value()
+    csprng_tick_count = self.csprng_wrapper.tick_count
+
+    # Only send any data before closing if the current value is unused.
+    try:
+      if csprng_current_value is not False:
+        packer = struct.Struct('I I')
+        packed_data = packer.pack(csprng_current_value, csprng_tick_count)
+        client.sendall(packed_data)
+    finally:
+      client.close()
+
 demo_start_time_backdating = random.randint(0xff, 0xff*2)
-
 start_time = int(time.time()) - demo_start_time_backdating
-seed = str(start_time)
+seed = start_time
 print "seed = %s" % seed
-csprng_wrapper = CSPRNGWrapper(seed, demo_start_time_backdating)
 
-tick_thread = TickThread(csprng_wrapper.tick, 1)
+csprng = exercise2.CsprngSingleAccess(seed, write_dots=True)
+csprng.advance(demo_start_time_backdating)
+
+tick_thread = exercise2.TickThread(csprng.tick, 1)
 tick_thread.daemon = True
 tick_thread.start()
 
-number_server_thread = NumberServerThread(csprng_wrapper, start_time)
+number_server_thread = NumberServerThread(csprng)
 number_server_thread.daemon = True
 number_server_thread.start()
 
