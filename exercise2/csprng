@@ -41,7 +41,7 @@ class NumberServerThread(threading.Thread):
 # seconds. This makes it feel a little more realistic.
 demo_start_time_backdating = random.randint(0xff, 0xff*2)
 start_time = int(time.time()) - demo_start_time_backdating
-print "seed = %s" % seed
+print "seed = %s" % start_time
 
 csprng = exercise2.CsprngSingleAccess(start_time, write_dots=True)
 csprng.advance(demo_start_time_backdating)

@@ -33,6 +33,7 @@ def hex_lottery(attempt="ffffffff"):
 #               Name this function `estimate_start_time` as below.
 # Hint: the start time was X minutes ago. You can get the current unix timestamp
 #       with int(time.time())
+# Hint: you want to keep running the lottery until the minute changes.
 ################################################################################
 
 # def estimate_start_time():
@@ -70,6 +71,17 @@ def seed_fits_observations(seed, estimated_ticks, observations):
   return float(matches) / float(len(observations))
 
 tick_count_estimate, start_time_estimate, observations = estimate_start_time()
+
+# We know now how many ticks have taken place. Each tick is designed to take about 1
+# second, but that's probably not exact. You might find ticks happen on average a
+# little over 1s, because of the time to schedule the next tick.
+#
+# So the challenge is finding the correct seed for the CSPRNG. This should be very
+# close to the current unix time minus the number of ticks. We can find this in two
+# ways:
+
+# But we do not know how much time
+# has elapsed.
 
 ################################################################################
 # STUDENT TASK: Write a function to find the correct seed.

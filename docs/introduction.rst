@@ -93,6 +93,7 @@ In the following charts, a pseudorandom sequence should look like atmospheric no
          <canvas class="numbers-noise-coord-plot" id="numbers-noise-coord-prime-digits" width="200" height="225" data-plot-name="Primes mod 10" data-numbers-path="_static/numbers/65536-prime-digits.txt"></canvas>
          <canvas class="numbers-noise-coord-plot" id="numbers-noise-coord-python-random-mersenne" width="200" height="225" data-plot-name="Mersenne Twister (Python)" data-numbers-path="_static/numbers/65536-python-random-mersenne.txt"></canvas>
          <canvas class="numbers-noise-coord-plot" id="numbers-noise-coord-python-systemrandom" width=200" height="225" data-plot-name="High-quality PRNG (Yarrow)" data-numbers-path="_static/numbers/65536-python-systemrandom.txt"></canvas>
+         <canvas class="numbers-noise-coord-plot" id="numbers-noise-coord-randu" width=200" height="225" data-plot-name="RANDU" data-numbers-path="_static/numbers/65536-randu.txt"></canvas>
 
    Primes came out quite pretty, but we're not doing Number Theory. Our `primes mod 10` look far more
    structured than in the previous plot. Why?

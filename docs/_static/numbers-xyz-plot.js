@@ -1,4 +1,4 @@
-// <canvas class="numbers-numbers" id="numbers-numbers-naturals" width="900" height="790" data-numbers="_static/65536-naturals.txt"></canvas>
+// <canvas class="numbers-numbers" id="numbers-numbers-naturals" width="900" height="790" data-numbers-path="_static/65536-naturals.txt"></canvas>
 
 function NumbersXYZPlot(container) {
   var _self = this
@@ -34,20 +34,20 @@ NumbersXYZPlot.prototype.initialiseRenderer = function initialiseRenderer() {
   var ambient_light = new THREE.AmbientLight(0xffffff)
   _self.scene.add(ambient_light)
 
-  var frustumSize = 600,
+  /*var frustumSize = 2,
       aspect = parseFloat(_self.width) / _self.height
   _self.camera = new THREE.OrthographicCamera(
     0.5 * frustumSize * aspect / - 2,
     0.5 * frustumSize * aspect / 2,
     frustumSize / 2,
     frustumSize / -2,
-    150,
-    1000
-  )
+    0.3,
+    15
+  )*/
 
-  //_self.camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 1, 10000)
-  _self.camera.position.set(500, 800, 0)
-  _self.camera.lookAt(new THREE.Vector3())
+  _self.camera = new THREE.PerspectiveCamera(60, _self.width / _self.height, 1, 10000)
+  _self.camera.position.set(20, 20, 20)//(2.0, 2.0, 2.0)
+  _self.camera.lookAt(new THREE.Vector3(0.5, 0.5, 0.5))
 
   _self.controls = new THREE.OrbitControls(_self.camera, _self.renderer.domElement)
   _self.controls.enableDamping = true
@@ -55,9 +55,9 @@ NumbersXYZPlot.prototype.initialiseRenderer = function initialiseRenderer() {
   _self.controls.enableZoom = true
   _self.controls.addEventListener("change", _self.render.bind(_self))
 
-  _self.voxel_geometry = new THREE.BoxGeometry(3, 3, 3)
+  _self.voxel_geometry = new THREE.BoxGeometry(1, 1, 1)
   _self.voxel_material = new THREE.MeshLambertMaterial({
-    color: 0xffffff
+    color: 0xffffff//000000
   })
 }
 
@@ -97,9 +97,9 @@ NumbersXYZPlot.prototype.drawNumbers = function drawNumbers() {
   _self.ys = []
   _self.zs = []
   for (var n = 0; n + 2 < _self.numbersLength; n++) {
-    _self.xs.push(-parseFloat(_self.maxNumber) / 2 + _self.numbers[n])
-    _self.ys.push(-parseFloat(_self.maxNumber) / 2 + _self.numbers[n+1])
-    _self.zs.push(-parseFloat(_self.maxNumber) / 2 + _self.numbers[n+2])
+    _self.xs.push(_self.numbers[n])
+    _self.ys.push(_self.numbers[n+1])
+    _self.zs.push(_self.numbers[n+2])
   }
 
   _self.xBounds = _self.getArrayBounds(_self.xs)
@@ -113,7 +113,9 @@ NumbersXYZPlot.prototype.drawNumbers = function drawNumbers() {
   var voxels_geometry = new THREE.Geometry()
   for (var i = 0; i < _self.numbersLength; i++) {
     var voxel = new THREE.Mesh(_self.voxel_geometry)
-    voxel.position.set(_self.xs[i], _self.ys[i], _self.zs[i])
+    //voxel.position.set(1.0 / _self.xsRescaled[i], 1.0 / _self.ysRescaled[i], 1.0 / _self.zsRescaled[i])
+    voxel.position.set(_self.xsRescaled[i], _self.ysRescaled[i], _self.zsRescaled[i])
+    //console.log(voxel.position)
     voxel.updateMatrix()
     voxels_geometry.merge(voxel.geometry, voxel.matrix)
   }
@@ -135,13 +137,17 @@ NumbersXYZPlot.prototype.rescaleArray = function rescaleArray(a) {
 
   var bounds = _self.getArrayBounds(a)
   for (var i = 0; i < a.length; i++) {
-    a[i] = (a[i] - bounds[2]) * bounds[3]
+    a[i] = a[i] / bounds[1]
+    /*a[i] = (a[i] - bounds[2]) * bounds[3]
+    if (a[i] == 0) {
+      a[i] = 1.0 / a[i]
+    }*/
   }
   return a
 }
 
 jQuery(document).ready(function () {
   $(".numbers-xyz-plot").each(function () {
-    new NumbersXYZPlot(this)
+    window.xyz_plot = new NumbersXYZPlot(this)
   })
 })
