@@ -2,8 +2,9 @@ docs/.doctrees/
 docs/.buildinfo
 exercise1/js/numbers/**/*.png
 
-exercise1/js/numbers/scripts/target/
-exercise1/js/numbers/scripts/Cargo.lock
+exercise1/numbers/scripts/target/
+exercise1/numbers/scripts/Cargo.lock
+exercise1/numbers/old-exercise-1-js-numbers
 
 # https://github.com/github/gitignore/blob/master/Python.gitignore
 # Byte-compiled / optimized / DLL files

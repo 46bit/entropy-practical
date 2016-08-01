@@ -31,6 +31,16 @@ hr {
 .chart-collection label {
   display: block;
 }
+.chart-image-zoom {
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  width: 160px;
+  height: 160px;
+  padding: 20px;
+  text-shadow: 0px 0px 6px black;
+  background-position: center;
+}
 
 .numbers-frame-collection {
   overflow: hidden;
@@ -41,12 +51,27 @@ hr {
   width: 200px;
   margin-right: 20px;
   display: block;
+  position: relative;
+}
+
+.numbers-frame .label {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  color: white;
+  font-weight: bold;
+  font-size: 20px;
+  text-shadow: 1px 1px 6px black;
+  z-index: 1;
 }
 
 .numbers-frame pre {
+  margin-top: 0;
+  background: black;
+  color: white;
   text-align: right;
   border: 1px dotted grey;
-  padding: 20px 20px 0;
+  padding: 7px 20px 0;
   height: 285px;
   overflow: scroll;
 }
