@@ -1,5 +1,9 @@
 docs/.doctrees/
 docs/.buildinfo
+exercise1/js/numbers/**/*.png
+
+exercise1/js/numbers/scripts/target/
+exercise1/js/numbers/scripts/Cargo.lock
 
 # https://github.com/github/gitignore/blob/master/Python.gitignore
 # Byte-compiled / optimized / DLL files

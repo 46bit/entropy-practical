@@ -7,5 +7,6 @@ if X_n = 0,
 if X_n = 1,
   X_(n+1) = -1 . 1 + 1 = -1 + 1 = 0
 
-In practice the multiplier will need to be the modulus + 1 or such. Normal number theory rules for
+In practice the multiplier will need to be the modulus - 1 or such. Normal number theory rules for
 modulus, etc.
+

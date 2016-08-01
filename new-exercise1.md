@@ -25,6 +25,28 @@ Similarly with LCGs, sequences of maximal cycle length can have similar drawback
 
 Write a program to calculate the cycle length for low-order bits.
 
+Consider the sequence:
+  0x9282    2  10
+  0x3aae    e  10
+  0x5e80    0  00
+  0x9c3e    e  10
+  0x13f6    6  00
+  0x320a    a  10
+  0xa082    2  10
+  0x64ca    a  10
+  0xf928    8  00
+  0x1570    0  00
+  0xb07a    a  10
+  0x8cd2    2  10
+  0x7992    2  10
+  0xffaa    a  10
+  0xab02    2  10
+  0x460     0  00
+  0x6d28    8  00
+  0x7054    4
+  0xa5de    e
+  0xd0e8    8
+
 [@TODO: Figure out where LCGs go. Consider how little theory to discuss.]
 
 LCG intro:
@@ -33,3 +55,4 @@ A simple-to-introduce PRNG known as the Linear Congruential Generator was once c
 non-cryptographic applications. It works like thus:
 
 X_(n+1) = a.X_n +
+x

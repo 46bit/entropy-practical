@@ -1,0 +1,9 @@
+[package]
+name = "scripts"
+version = "0.1.0"
+authors = ["Michael Mokrysz <hi@46b.it>"]
+
+[dependencies]
+extprim = "1.1.0"
+image = "*"
+num = "*"
