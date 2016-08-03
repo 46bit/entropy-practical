@@ -70,56 +70,48 @@ fn main() {
             let mask = (1<<low_order_bit_count)-1; // 0x127;
             let low_order_bit_cycle_length = find_mask_cycle(mask, a, m, c, cycle_length, run_in, outputs.clone());
             println!("low_order_bit_count={} low_order_bit_cycle_length={}", low_order_bit_count, low_order_bit_cycle_length);
-            /*if low_order_bit_cycle_length < cycle_length {
-                for i in 0..(low_order_bit_cycle_length*4) {
-                    let output = outputs[(i + run_in) as usize];
-                    println!("{} {}", output & mask, output);
-                }
-            }*/
         }
     }
 
+    let path = format!("../a={}-m={}-c={}-intensity.png", a, m, c);
+    let ref mut fout = File::create(&Path::new(&path)).unwrap();
     let mut imgbuf = image::ImageBuffer::new(sx, sy);
-
     for (x, y, pixel) in imgbuf.enumerate_pixels_mut() {
       let pixel_output = outputs[(x + y * sx) as usize];
-
-      /*let mut of = (pixel_output & mask) as f32;
-      of /= mask as f32; //(m & mask) as f32;
-      of *= 0xff as f32;*/
       let mut of = pixel_output as f32;
       of /= m as f32;
       of *= 0xff as f32;
-
-      *pixel = image::Luma([of.round() as u8]);//pixel_output as u8]);
+      *pixel = image::Luma([of.round() as u8]);
     }
-
-    // Save the image as “fractal.png”
-    let path = format!("../a={}-m={}-c={}-intensity.png", a, m, c);
-    let ref mut fout = File::create(&Path::new(&path)).unwrap();
-    // We must indicate the image’s color type and what format to save as
-    let _ = image::ImageLuma8(imgbuf).save(fout, image::PNG);
-
+    image::ImageLuma8(imgbuf).save(fout, image::PNG).unwrap();
 
     let mut imgbuf2 = image::ImageBuffer::new(sx, sy);
     for i in 1..capacity {
       *imgbuf2.get_pixel_mut((outputs[i as usize] % sx) as u32, (outputs[(i-1) as usize] % sy) as u32) = image::Luma([255 as u8]);
     }
+    let path = format!("../a={}-m={}-c={}-pairs.png", a, m, c);
+    let ref mut fout2 = File::create(&Path::new(&path)).unwrap();
+    image::ImageLuma8(imgbuf2).save(fout2, image::PNG).unwrap();
 
-    // Save the image as “fractal.png”
-    let path2 = format!("../a={}-m={}-c={}-pairs.png", a, m, c);
-    let ref mut fout2 = File::create(&Path::new(&path2)).unwrap();
-    // We must indicate the image’s color type and what format to save as
-    let _ = image::ImageLuma8(imgbuf2).save(fout2, image::PNG);
-
-    // Save the image as “fractal.png”
-    let path3 = format!("../a={}-m={}-c={}-outputs.txt", a, m, c);
-    let ref mut f = File::create(&Path::new(&path3)).unwrap();
+    let path = format!("../a={}-m={}-c={}-denary.txt", a, m, c);
+    let ref mut f = File::create(&Path::new(&path)).unwrap();
     let mut sv = vec![];
     for i in 1..300 {
-        sv.push(outputs[i].to_string());
+        sv.push(format!("{:6}", outputs[i]));
     }
-    f.write_all(sv.join("\n").as_bytes()).unwrap();
+    let mut s = String::from("");//format!("cycle_length={}\n", cycle_length));
+    s.push_str(&*sv.join("\n"));
+    f.write_all(s.as_bytes()).unwrap();
+
+    let path = format!("../a={}-m={}-c={}-binary.txt", a, m, c);
+    let ref mut f = File::create(&Path::new(&path)).unwrap();
+    let mut sv = vec![];
+    for i in 1..300 {
+        sv.push(format!("…{:05b}", outputs[i] & 0x1f));
+    }
+    let mut s = String::from("");//format!("cycle_length={}\n", cycle_length));
+    s.push_str(&*sv.join("\n"));
+    f.write_all(s.as_bytes()).unwrap();
 }
 
 fn find_mask_cycle(mask: u32, a: u32, m: u32, c: u32, cycle_length: u32, run_in: u32, outputs: Vec<u32>) -> u32 {
@@ -153,3 +145,7 @@ fn find_mask_cycle(mask: u32, a: u32, m: u32, c: u32, cycle_length: u32, run_in:
     }
     low_order_bit_cycle_length
 }
+
+/*fn save_lcg_output_file(a: u32, m: u32, c: u32, name: str, content) {
+
+}*/

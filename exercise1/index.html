@@ -103,7 +103,7 @@
     <h2>How about now?</h2>
     <p>A sample output sequence for each.</p>
     <ul class="numbers-frame-collection">
-      <li class="numbers-frame" data-numbers-path="numbers/a=65473-m=65536-c=0-outputs.txt">
+      <li class="numbers-frame" data-numbers-path="numbers/a=65473-m=65536-c=0-binary.txt">
         <span class="label">A</span>
         <pre></pre>
         <label>
@@ -112,7 +112,7 @@
         </label>
         <p class="reveal">Nope. It looks random.</p>
       </li>
-      <li class="numbers-frame" data-numbers-path="numbers/a=259-m=65534-c=0-outputs.txt">
+      <li class="numbers-frame" data-numbers-path="numbers/a=259-m=65534-c=0-binary.txt">
         <span class="label">B</span>
         <pre></pre>
         <label>
@@ -121,7 +121,7 @@
         </label>
         <p class="reveal">Where are the even numbers?</p>
       </li>
-      <li class="numbers-frame" data-numbers-path="numbers/a=9562-m=65522-c=0-outputs.txt">
+      <li class="numbers-frame" data-numbers-path="numbers/a=9562-m=65522-c=0-binary.txt">
         <span class="label">C</span>
         <pre></pre>
         <label>
@@ -130,7 +130,7 @@
         </label>
         <p class="reveal">They're all even.</p>
       </li>
-      <li class="numbers-frame" data-numbers-path="numbers/a=1001-m=2187-c=8-outputs.txt">
+      <li class="numbers-frame" data-numbers-path="numbers/a=1001-m=2187-c=8-binary.txt">
         <span class="label">D</span>
         <pre></pre>
         <label>
@@ -141,7 +141,7 @@
       </li>
     </ul>
     <ul class="numbers-frame-collection">
-      <li class="numbers-frame" data-numbers-path="numbers/a=361-m=450-c=1-outputs.txt">
+      <li class="numbers-frame" data-numbers-path="numbers/a=361-m=450-c=1-binary.txt">
         <span class="label">E</span>
         <pre></pre>
         <label>
@@ -150,7 +150,7 @@
         </label>
         <p class="reveal">Alternating even and odd numbers.</p>
       </li>
-      <li class="numbers-frame" data-numbers-path="numbers/a=71-m=125-c=1-outputs.txt">
+      <li class="numbers-frame" data-numbers-path="numbers/a=71-m=125-c=1-binary.txt">
         <span class="label">F</span>
         <pre></pre>
         <label>
@@ -159,7 +159,7 @@
         </label>
         <p class="reveal">Alternating even and odd numbers.</p>
       </li>
-      <li class="numbers-frame" data-numbers-path="numbers/a=85-m=65536-c=1-outputs.txt">
+      <li class="numbers-frame" data-numbers-path="numbers/a=85-m=65536-c=1-binary.txt">
         <span class="label">G</span>
         <pre></pre>
         <label>
@@ -168,7 +168,7 @@
         </label>
         <p class="reveal">Alternating even and odd numbers.</p>
       </li>
-      <li class="numbers-frame" data-numbers-path="numbers/a=29305-m=58564-c=1-outputs.txt">
+      <li class="numbers-frame" data-numbers-path="numbers/a=29305-m=58564-c=1-binary.txt">
         <span class="label">H</span>
         <pre></pre>
         <label>
@@ -253,8 +253,22 @@
     <hr>
 
     <h2>Linear Congruential Generators</h2>
-    <p>The algorithm behind several generators above is called the Linear Congruential Generator. It works by a simple recurrence relationship:</p>
-    <p><pre>X<sub>n+1</sub> = aX<sub>n</sub> + c (mod m)</pre></p>
+    <p>The algorithm behind all these sequences is called the Linear Congruential Generator. It works by a simple recurrence relationship:</p>
+    <p><pre style="font-size: 30px;">X<sub>n+1</sub> = aX<sub>n</sub> + c (mod m)</pre></p>
+    <p>So starting with a provided <b>seed <code>X<sub>0</sub></code></b> this generates a sequence,</p>
+    <p><pre style="font-size: 24px;">X<sub>0</sub>, X<sub>1</sub>, X<sub>2</sub>, X<sub>3</sub>, &hellip;</pre></p>
+    <p>where</p>
+    <p><pre style="font-size: 24px;">X<sub>1</sub> = aX<sub>0</sub> + c (mod m)
+X<sub>2</sub> = aX<sub>1</sub> + c (mod m)
+X<sub>3</sub> = aX<sub>2</sub> + c (mod m)
+&vellip;
+</pre></p>
+    <p>Each generator <code>A, &hellip;, H</code> has its own parameters <code>a</code>, <code>m</code> and <code>c</code>. You'll be provided with these to answer the questions that follow.</p>
+
+    <h2>Why do some of these sequences look more random than others?</h2>
+    <h3>Cycle length</h3>
+    <p>Keeping (<code>a</code>, <code>m</code>, <code>c</code>) constant, each value of <code>X<sub>n</sub></code> will always be mapped to a particular corresponding <code>X<sub>n+1</sub></code></p>
+
     <p>Let's take two examples</p>
     <ul>
       <li>
