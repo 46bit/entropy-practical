@@ -255,10 +255,11 @@ X<sub>3</sub> = aX<sub>2</sub> + c (mod m)
 &vellip;</pre>
     </p>
     <p>Each generator <code>A, &hellip;, H</code> has its own parameters <code>a</code>, <code>m</code> and <code>c</code>. You'll be provided with these to answer the questions that follow.</p>
+    <hr>
 
     <h2>Why do some of these sequences look more random than others?</h2>
 
-    <h3>Cycle length</h3>
+    <h3>Task 1: Cycle lengths</h3>
 
     <p>Let's consider generator A. This has parameters <code>a = 65473, m = 65536, c = 0</code>.</p>
 
@@ -266,14 +267,22 @@ X<sub>3</sub> = aX<sub>2</sub> + c (mod m)
 
     <p>We set <code>X<sub>0</sub> = 1</code>. Now let's calculate things.</p>
 
-<pre>X<sub>1</sub> = 65473 . 1 + 0 (mod 65536)                               = 65473
-X<sub>2</sub> = 65473 . 65473 + 0 (mod 65536) = 4286713729 (mod 65536)  = 3969
-X<sub>3</sub> = 65473 . 1 + 0 (mod 65536) = 259862337 (mod 65536)       = 12097
-X<sub>4</sub> = 65473 . 1 + 0 (mod 65536) = 792026881 (mod 65536)       = 24321</pre>
+<pre>X<sub>1</sub> = 65473&times;1     + 0 (mod 65536) =      65473 (mod 65536) = 65473 = 0b1111111111000001
+X<sub>2</sub> = 65473&times;65473 + 0 (mod 65536) = 4286713729 (mod 65536) =  3969 = 0b0000111110000001
+X<sub>3</sub> = 65473&times;3969  + 0 (mod 65536) =  259862337 (mod 65536) = 12097 = 0b0010111101000001
+X<sub>4</sub> = 65473&times;12097 + 0 (mod 65536) =  792026881 (mod 65536) = 24321 = 0b0101111100000001</pre>
 
     <p>Eventually, some <code>X<sub>n</sub></code> will be equal to <code>65473 = X<sub>1</sub>.</code>. When that happens the sequence will have done one cycle, and then <code>X<sub>n+1</sub> = X<sub>2</sub></code> and so forth. The length the cycle is a big determinant of how good the generators look in the first set of charts.</p>
 
     <p>Therefore your first task is to calculate cycle lengths.</p>
+    <p><b>@TODO: direct people to <code>exercise1/cycle_lengths.py</code>.</b></p>
+
+    <p>Cross-reference your cycle lengths with the top diagrams. Do you see how the ones with small visible patterns tend to have short cycle lengths?</p>
+
+    <h3>Task 2: Low bit cycle lengths</h3>
+    <p>Consider the binary outputs from generator A, B, C, E, G or H. Their low bits all have patterns, where they show values in a predictable fashion. D and F lack such an obvious pattern - but that may well be because it's too long for us to spot immediately.</p>
+    <p>To explore this more we want to calculate the cycle lengths for the lowest X bits of the outputs.</p>
+
   </div>
 </body>
 </html>

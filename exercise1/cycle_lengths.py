@@ -11,6 +11,7 @@ class LCG():
 
     def setseed(self, value):
         self.state = value % self.param.modulus
+        return self
 
     def next(self):
         self.state = (self.param.multiplier * self.state + self.param.increment) % self.param.modulus
