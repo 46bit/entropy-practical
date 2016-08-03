@@ -58,6 +58,31 @@ def find_cycle_length(lcg):
 #     # Hint: you want to count how long until output 1 comes up again.
 #     return cycle_length
 
-for lcg_name in LCGS:
+for lcg_name in ["A", "B", "C", "D", "E", "F", "G", "H"]:
     lcg = LCGS[lcg_name]
     print("LCG %s\n  %s\n  cycle_length=%d" % (lcg_name, lcg.param, find_cycle_length(lcg)))
+
+# @TODO: Move to separate file before giving to student.
+# @TODO: Obfuscate correct answers before giving to student.
+import unittest
+
+class LCGCycleLengthTest(unittest.TestCase):
+    def test_a(self):
+        self.assertEqual(find_cycle_length(LCGS["A"]), 1024)
+    def test_b(self):
+        self.assertEqual(find_cycle_length(LCGS["B"]), 150)
+    def test_c(self):
+        self.assertEqual(find_cycle_length(LCGS["C"]), 3620)
+    def test_d(self):
+        self.assertEqual(find_cycle_length(LCGS["D"]), 162)
+
+    def test_e(self):
+        self.assertEqual(find_cycle_length(LCGS["E"]), 450)
+    def test_f(self):
+        self.assertEqual(find_cycle_length(LCGS["F"]), 125)
+    def test_g(self):
+        self.assertEqual(find_cycle_length(LCGS["G"]), 65536)
+    def test_h(self):
+        self.assertEqual(find_cycle_length(LCGS["H"]), 58564)
+
+unittest.main()
