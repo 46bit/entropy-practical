@@ -27,6 +27,7 @@ hr {
   float: left;
   margin-right: 20px;
   display: block;
+  width: 200px;
 }
 .chart-collection label {
   display: block;
@@ -76,4 +77,11 @@ hr {
   padding: 7px 20px 0;
   height: 285px;
   overflow: scroll;
+}
+
+.reveal {
+  display: none;
+}
+.reveal-tick {
+
 }
