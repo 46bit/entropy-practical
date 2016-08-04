@@ -1,44 +1,18 @@
+# python3 -m unittest low_order_cycle_lengths_test
+# or
+# python3 low_order_cycle_lengths_test.py
+
+import sys, unittest, bcrypt
 from randompy.exercise1 import LCG, LCGS
 
-# DEMO SOLUTION
-# N.B. No need to handle run in; LCG parameters are picked to avoid it for simplicity.
-# @TODO: Remove before giving this to a student.
-def find_low_bits_cycle(low_bit_count, lcg, run_in=0):
-    mask = (1 << low_bit_count) - 1
-    #mask = 1 << (low_bit_count - 1)
-    lob_cycle_length = 1
-    explained = False
-    first_output = lcg.next()
-    first_output_lob = first_output & mask
-    while not explained and lob_cycle_length < lcg.param.modulus:
-        new_output = lcg.next()
-        new_output_lob = new_output & mask
-        if new_output_lob == first_output_lob:
-            g1 = LCG(lcg.param).setseed(first_output)
-            g2 = LCG(lcg.param).setseed(new_output)
-            explained = True
-            for i in range(0, lcg.param.modulus):
-                if g1.next() & mask != g2.next() & mask:
-                    explained = False
-                    break
-        if not explained:
-            lob_cycle_length += 1
-    return lob_cycle_length
-
-# SKELETON FOR STUDENT
-#def find_low_bits_cycle(low_bit_count, lcg, run_in=0):
-#    return lob_cycle_length
-
-if __name__ == "__main__":
-    for lcg_name in ["A", "B", "C", "D", "E", "F", "G", "H"]:
-        lcg = LCGS[lcg_name]
-        print("LCG %s\n  %s" % (lcg_name, lcg.param))
-        for low_bit_count in range(1, 17):
-            low_bit_cycle_length = find_low_bits_cycle(low_bit_count, lcg)
-            print("  low_%dbits_cycle_length = %d" % (low_bit_count, low_bit_cycle_length))
-
-# @TODO: Move to separate file before giving to student.
-import unittest, bcrypt
+# For new Python:
+#from pathlib import Path
+#root = Path(__file__).resolve().parents[0].path
+# For older Python:
+from os.path import dirname, abspath
+root = dirname(abspath(__file__))
+sys.path.append(root)
+from low_order_cycle_lengths import find_low_bits_cycle
 
 class LCGLowBitCycleLengthTest(unittest.TestCase):
     # Bruteforcing for the correct cycle lengths is going to take a while. Each guess will
@@ -46,7 +20,7 @@ class LCGLowBitCycleLengthTest(unittest.TestCase):
     # Given that, you're probably better off asking for help instead. ;-)
     def bcrypt_cmp(self, expectation, cycle_lengths):
         cycle_lengths_str = ",".join(map(str, cycle_lengths))
-        bcrypted_cycle_length = bcrypt.hashpw(cycle_lengths_str, expectation)
+        bcrypted_cycle_length = bcrypt.hashpw(cycle_lengths_str.encode('utf-8'), expectation.encode('utf-8')).decode()
         self.assertEqual(expectation, bcrypted_cycle_length)
 
     def assemble_0to16_low_bit_cycle_lengths(self, lcg):
@@ -98,3 +72,5 @@ class LCGLowBitCycleLengthTest(unittest.TestCase):
         expectation = "$2b$14$1Dfkh6259abwtbw6eO2mhOPVyzH/590sTtRmEkJvBSqqaenoEn38a"
         cycle_lengths = self.assemble_0to16_low_bit_cycle_lengths(LCGS["H"])
         self.bcrypt_cmp(expectation, cycle_lengths)
+
+unittest.main()

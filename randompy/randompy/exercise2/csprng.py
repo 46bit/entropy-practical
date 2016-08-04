@@ -23,13 +23,13 @@ class Csprng(object):
   def reseed(self, seed):
     # Seed a Fortuna instance from the Tyche package.
     self.fortuna = Tyche.FortunaGenerator()
-    self.fortuna.reseed(str(seed))
+    self.fortuna.reseed(bytes(str(seed), "utf-8"))
     self.tick_count = 0
 
   def bytes_to_u32(self, bs):
     u32 = 0
     for b in bs:
-      u32 = (u32 << 8) | ord(b)
+      u32 = (u32 << 8) | (b & 0xff)
     return u32
 
   # Prevent each tick's current_value being given out more than once.

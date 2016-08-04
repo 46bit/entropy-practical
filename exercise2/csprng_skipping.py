@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os, sys, readchar, random, time, socket, string
 from threading import Timer, Thread, Event

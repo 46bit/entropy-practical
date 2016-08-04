@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os, sys, time, subprocess, re
 from randompy import exercise2
@@ -8,7 +8,7 @@ total_cost_of_play = 0
 def hex_lottery(attempt="ffffffff"):
   try:
     # ./hex-lottery ffffffff
-    lottery_output = subprocess.check_output(["./hex-lottery", attempt])
+    lottery_output = subprocess.check_output(["./hex-lottery", attempt]).decode("utf-8")
   except subprocess.CalledProcessError:
     time.sleep(0.1)
     return hex_lottery(attempt)
@@ -18,7 +18,7 @@ def hex_lottery(attempt="ffffffff"):
     "result": exercise2.Reels.from_reels(re.search("DRAWN   ([0-9a-z ]+)", lottery_output).group(1)),
     "cost_of_play": int(re.search("\$([0-9,]+) a play", lottery_output).group(1).replace(",", ""))
   }
-  print "minute=%d result='%s' cost_of_play=%d" % (observation["minute"], observation["result"], observation["cost_of_play"])
+  print("minute=%d result='%s' cost_of_play=%d" % (observation["minute"], observation["result"], observation["cost_of_play"]))
 
   # Simplest way to keep track of total cost of play without classes or extra code.
   global total_cost_of_play
@@ -50,7 +50,7 @@ def estimate_start_time():
   tick_count_estimate = observations[-1]["minute"] * 60
   start_time_estimate = int(time.time()) - tick_count_estimate
 
-  print tick_count_estimate, start_time_estimate
+  print(tick_count_estimate, start_time_estimate)
   return tick_count_estimate, start_time_estimate, [observation["result"].u32 for observation in observations]
 
 def seed_fits_observations(seed, estimated_ticks, observations):
@@ -94,17 +94,17 @@ tick_count_estimate, start_time_estimate, observations = estimate_start_time()
 
 offsets = [0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, -8, 9, -9, 10, -10, 11, -11]
 offset_observation_fits = [seed_fits_observations(start_time_estimate + i, tick_count_estimate + i, observations) for i in offsets]
-print offset_observation_fits
+print(offset_observation_fits)
 max_observation_fit = max(offset_observation_fits)
 offset_with_max_fit = offsets[offset_observation_fits.index(max_observation_fit)]
 
 tick_count_estimate += offset_with_max_fit
 start_time_estimate += offset_with_max_fit
-print max_observation_fit, offset_with_max_fit, tick_count_estimate, start_time_estimate
+print(max_observation_fit, offset_with_max_fit, tick_count_estimate, start_time_estimate)
 
 # Tick the CSPRNG until it matches a new play.
 observation = hex_lottery()
-print "'" + str(observation["result"]) + "'"
+print("'" + str(observation["result"]) + "'")
 csprng = exercise2.Csprng(start_time_estimate)
 while csprng.get_current_value() != observation["result"].u32:
   csprng.tick()
@@ -114,14 +114,14 @@ while csprng.get_current_value() != observation["result"].u32:
 # After this we'll be pretty up to date. However measuring the time taken for
 # operations would be much better than this rough approach.
 observation = hex_lottery()
-print "'" + str(observation["result"]) + "'"
+print("'" + str(observation["result"]) + "'")
 while csprng.get_current_value() != observation["result"].u32:
   csprng.tick()
 
-print "Total cost of plays = ${:,}".format(total_cost_of_play)
+print("Total cost of plays = ${:,}".format(total_cost_of_play))
 
 csprng.tick()
 time.sleep(1.0)
 guess = exercise2.Reels(csprng.get_current_value())
-print "'" + str(guess) + "'"
+print("'" + str(guess) + "'")
 subprocess.call(["./hex-lottery", str(guess)])

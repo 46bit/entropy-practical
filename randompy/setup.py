@@ -51,7 +51,7 @@ setup(
                  'Topic :: Security',
                  ],
 
-    install_requires=["Tyche==1.0"],
+    install_requires=["Tyche==1.0", "bcrypt>=3.1.0", "readchar==0.7"],
 
     keywords='random prng education',
 

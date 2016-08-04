@@ -1,6 +1,6 @@
-import csprng
+from .csprng import Csprng
 
-class CsprngSingleAccess(csprng.Csprng):
+class CsprngSingleAccess(Csprng):
   def tick(self):
     super(CsprngSingleAccess, self).tick()
     self.current_value_used = False

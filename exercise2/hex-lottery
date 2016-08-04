@@ -1,9 +1,12 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import os, sys, readchar, random, time, socket, string, struct
 from randompy import exercise2
 
 shell_is_interactive = os.isatty(sys.stdout.fileno())
+
+if shell_is_interactive:
+  tmp = os.system('clear')
 
 # Get data from CSPRNG Numbers Server.
 # N.B. By choice I would get this after the symbols have been chosen by the user,
@@ -13,7 +16,7 @@ s.connect(("127.0.0.1", 4646))
 packer = struct.Struct('I I')
 data = s.recv(packer.size)
 if len(data) == 0:
-  print ":: Another game was already taking place. Please try again in a moment."
+  print(":: Another game was already taking place. Please try again in a moment.")
   sys.exit(1)
 result_u32, tick_count_u32 = packer.unpack(data)
 result = exercise2.Reels(result_u32)
@@ -32,14 +35,14 @@ _banner = """\
 def banner(minute):
   return _banner.format(minute, 2**minute, 2**(minute+10))
 
-print banner(tick_count_u32 / 60)
+print(banner(int(tick_count_u32 / 60)))
 
 # if shell_is_interactive:
 #   sys.stdout.write(":: Would you like to play? [Y/n] ")
 #   c = readchar.readchar()
-#   print c
+#   print(c)
 #   if c.lower() == "n":
-#     print "   OK. See you next time!"
+#     print("   OK. See you next time!")
 #     sys.exit(0)
 
 # Have user pick their reel symbols.
@@ -49,6 +52,7 @@ if len(sys.argv) >= 2:
   print(":: You chose to play {}\n".format(choice))
 else:
   sys.stdout.write(":: Which 8 symbols do you want to pick? [ffffffff] ")
+  sys.stdout.flush()
   choice = exercise2.Reels(0xffffffff)
   chosen_chars = []
   while len(chosen_chars) < 8:
@@ -61,15 +65,7 @@ else:
       break
   if len(chosen_chars) == 8:
     choice = exercise2.Reels.from_reels("".join(chosen_chars))
-  print "\n"
-
-# if shell_is_interactive:
-#   sys.stdout.write(":: Would you like to play? [Y/n] ")
-#   c = readchar.readchar()
-#   print c
-#   if c.lower() == "n":
-#     print "   OK. See you next time!"
-#     sys.exit(0)
+  print("\n")
 
 class ReelMachine(object):
   def __init__(self, result, choice, cycles_before_result=1):
@@ -119,10 +115,10 @@ class ReelMachine(object):
 # @TODO: From CSPRNG.
 rm = ReelMachine(result, choice, 2)
 
-print """\
+print("""\
         7 6 5 4 3 2 1 0
 TO WIN  %s\
-""" % rm.choice.spaced_str()
+""" % rm.choice.spaced_str())
 
 if shell_is_interactive:
   def tick():
@@ -142,11 +138,11 @@ if shell_is_interactive:
 else:
   sys.stdout.write("DRAWN   " + rm.result.spaced_str())
 
-print "\n"
+print("\n")
 if rm.won():
-  print ":: YOU WON! Congratulations."
-  print "   The HEXADECIMAL LOTTERY regrets it cannot pay your winnings."
-  print "   The lottery has become insolvent from an unexpected volume of wins."
-  print "   Instead, have a cute rabbit. https://www.flickr.com/photos/hepp/214184243/"
+  print(":: YOU WON! Congratulations.")
+  print("   The HEXADECIMAL LOTTERY regrets it cannot pay your winnings.")
+  print("   The lottery has become insolvent from an unexpected volume of wins.")
+  print("   Instead, have a cute rabbit. https://www.flickr.com/photos/hepp/214184243/")
 else:
-  print ":: You didn't win! :-("
+  print(":: You didn't win! :-(")

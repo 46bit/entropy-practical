@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import sys, random, time, socket, struct, threading
 from randompy import exercise2
@@ -39,7 +39,7 @@ class NumberServerThread(threading.Thread):
 # seconds. This makes it feel a little more realistic.
 demo_start_time_backdating = random.randint(0xff, 0xff*2)
 start_time = int(time.time()) - demo_start_time_backdating
-print "seed = %s" % start_time
+print("seed = %s" % start_time)
 
 csprng = exercise2.CsprngSingleAccess(start_time, write_dots=True)
 csprng.advance(demo_start_time_backdating)

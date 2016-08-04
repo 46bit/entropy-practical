@@ -1,38 +1,25 @@
+# python -m unittest cycle_lengths_test
+# or
+# python cycle_lengths_test.py
+
+import sys, unittest, bcrypt
 from randompy.exercise1 import LCG, LCGS
 
-# DEMO SOLUTION
-# N.B. No need to handle run in; LCG parameters are picked to avoid it for simplicity.
-# @TODO: Remove before giving this to a student.
-def find_cycle_length(lcg):
-    first_output = lcg.next()
-    cycle_length = 0
-    while True:
-        cycle_length += 1
-        new_output = lcg.next()
-        if first_output == new_output:
-            break
-    return cycle_length
-
-# SKELETON FOR STUDENT
-# def find_cycle_length(lcg):
-#     # @TODO: Put your code here.
-#     # Hint: you want to count how long until output 1 comes up again.
-#     return cycle_length
-
-if __name__ == "__main__":
-    for lcg_name in ["A", "B", "C", "D", "E", "F", "G", "H"]:
-        lcg = LCGS[lcg_name]
-        print("LCG %s\n  %s\n  cycle_length=%d" % (lcg_name, lcg.param, find_cycle_length(lcg)))
-
-# @TODO: Move to separate file before giving to student.
-import unittest, bcrypt
+# For new Python:
+#from pathlib import Path
+#root = Path(__file__).resolve().parents[0].path
+# For older Python:
+from os.path import dirname, abspath
+root = dirname(abspath(__file__))
+sys.path.append(root)
+from cycle_lengths import find_cycle_length
 
 class LCGCycleLengthTest(unittest.TestCase):
     # Bruteforcing for the correct cycle lengths is going to take a while. Each guess will
     # take you >1s on a typical CPU, and the values range into the tens of thousands.
     # Given that, you're probably better off asking for help instead. ;-)
     def bcrypt_cmp(self, expectation, cycle_length):
-        bcrypted_cycle_length = bcrypt.hashpw(str(cycle_length), expectation)
+        bcrypted_cycle_length = bcrypt.hashpw(str(cycle_length).encode('utf-8'), expectation.encode('utf-8')).decode()
         self.assertEqual(expectation, bcrypted_cycle_length)
 
     def test_a(self):
@@ -74,3 +61,5 @@ class LCGCycleLengthTest(unittest.TestCase):
         expectation = "$2b$14$x/v4ZI4/wpvefetwp.PtmuLr//.SMXHOCzl0.Er9B6jhDQgj7azky"
         cycle_length = find_cycle_length(LCGS["H"])
         self.bcrypt_cmp(expectation, cycle_length)
+
+unittest.main()
