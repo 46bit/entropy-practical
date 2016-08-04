@@ -1,9 +1,7 @@
 #!/usr/bin/env python
 
-# PYTHONPATH=$PYTHONPATH:$PWD/Tyche:$PWD/prng-exercise ./csprng
-
-import sys, random, time, socket, struct, threading, exercise2
-# @TODO: ensure PyCrypto installed?
+import sys, random, time, socket, struct, threading
+from randompy import exercise2
 
 class NumberServerThread(threading.Thread):
   def __init__(self, csprng_wrapper):

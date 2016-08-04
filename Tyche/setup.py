@@ -63,37 +63,38 @@ kwargs = dict(
                  'Operating System :: POSIX',
                  ])
 
-if float(sys.version[0:3]) < 2.5:
-    kwargs['install_requires']=['pycrypto>=2.0']
+# Michael Mokrysz (2016-08-04): Best to ensure we have PyCrypto, for speed.
+#if float(sys.version[0:3]) < 2.5:
+kwargs['install_requires']=['pycrypto>=2.0']
 
-
-if (('sdist' in sys.argv or
-        'bdist_wheel' in sys.argv or
-        'bdist_wininst' in sys.argv or
-        'bdist_egg' in sys.argv or
-        'bdist' in sys.argv) or (os.name == 'nt' and
-                                 ('install' in sys.argv or
-                                  'build' in sys.argv)
-                                 )) and "--exclude-msvc" not in sys.argv:
-    while True:
-        agree = raw_input('\nYou need to agree to the Microsoft '
-                          'Visual C++ 2007 Redistributable '
-                          'License Agreement in order to '
-                          'install this library together with '
-                          'Visual C++ 2007 Redistributable '
-                          'which is required for EGDW with windows '
-                          '[Y/n] ')
-        if agree in ('', 'y'):
-            break
-        print ('invalid answer, must be y or n')
-        print ('')
-addfiles = []
-addfiles += ['Sources/cl32.dll']
-addfiles += ['Sources/egdw.exe']
-if "--exclude-msvc" not in sys.argv:
-    addfiles += ['Sources/msvcr71.dll']
-else:
-    sys.argv.remove("--exclude-msvc")
+# Michael Mokrysz (2016-08-04): Windows detection is bugged. Disabling checks.
+# if (('sdist' in sys.argv or
+#         'bdist_wheel' in sys.argv or
+#         'bdist_wininst' in sys.argv or
+#         'bdist_egg' in sys.argv or
+#         'bdist' in sys.argv) or (os.name == 'nt' and
+#                                  ('install' in sys.argv or
+#                                   'build' in sys.argv)
+#                                  )) and "--exclude-msvc" not in sys.argv:
+#     while True:
+#         agree = raw_input('\nYou need to agree to the Microsoft '
+#                           'Visual C++ 2007 Redistributable '
+#                           'License Agreement in order to '
+#                           'install this library together with '
+#                           'Visual C++ 2007 Redistributable '
+#                           'which is required for EGDW with windows '
+#                           '[Y/n] ')
+#         if agree in ('', 'y'):
+#             break
+#         print ('invalid answer, must be y or n')
+#         print ('')
+# addfiles = []
+# addfiles += ['Sources/cl32.dll']
+# addfiles += ['Sources/egdw.exe']
+# if "--exclude-msvc" not in sys.argv:
+#     addfiles += ['Sources/msvcr71.dll']
+# else:
+#     sys.argv.remove("--exclude-msvc")
 addfiles = ['Backends/Fallback/pyaes/License.txt']
 
 kwargs["package_data"] = {"Tyche": addfiles}

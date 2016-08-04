@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
-# PYTHONPATH=$PYTHONPATH:$PWD/Tyche:$PWD/prng-exercise python identify-minute.py
-
-import os, sys, time, subprocess, re, exercise2
+import os, sys, time, subprocess, re
+from randompy import exercise2
 
 total_cost_of_play = 0
 

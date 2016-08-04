@@ -1,6 +1,6 @@
-import exercise2
+import csprng
 
-class CsprngSingleAccess(exercise2.Csprng):
+class CsprngSingleAccess(csprng.Csprng):
   def tick(self):
     super(CsprngSingleAccess, self).tick()
     self.current_value_used = False

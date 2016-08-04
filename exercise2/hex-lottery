@@ -1,8 +1,7 @@
 #!/usr/bin/env python
 
-# PYTHONPATH=$PYTHONPATH:$PWD/Tyche:$PWD/prng-exercise ./hex-lottery
-
-import os, sys, readchar, random, time, socket, string, struct, exercise2
+import os, sys, readchar, random, time, socket, string, struct
+from randompy import exercise2
 
 shell_is_interactive = os.isatty(sys.stdout.fileno())
 
