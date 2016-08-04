@@ -3,22 +3,22 @@
 import os, sys, time, subprocess, re
 from randompy import exercise2
 
+# Note: This runs the lottery and returns
 total_cost_of_play = 0
-
-def hex_lottery(attempt="ffffffff"):
+def run_lottery(attempt="ffffffff"):
   try:
     # ./hex-lottery ffffffff
     lottery_output = subprocess.check_output(["./hex-lottery", attempt]).decode("utf-8")
   except subprocess.CalledProcessError:
     time.sleep(0.1)
-    return hex_lottery(attempt)
+    return run_lottery(attempt)
 
   observation = {
     "minute": int(re.search("MINUTE ([0-9]+)", lottery_output).group(1)),
     "result": exercise2.Reels.from_reels(re.search("DRAWN   ([0-9a-z ]+)", lottery_output).group(1)),
     "cost_of_play": int(re.search("\$([0-9,]+) a play", lottery_output).group(1).replace(",", ""))
   }
-  print("minute=%d result='%s' cost_of_play=%d" % (observation["minute"], observation["result"], observation["cost_of_play"]))
+  print("minute='%d' result='%s' cost_of_play='%d'" % (observation["minute"], observation["result"], observation["cost_of_play"]))
 
   # Simplest way to keep track of total cost of play without classes or extra code.
   global total_cost_of_play
@@ -27,95 +27,98 @@ def hex_lottery(attempt="ffffffff"):
   return observation
 
 ################################################################################
-# STUDENT TASK: Write a function to detect the minute changing, and estimate
-#               from this the unix timestamp when the CSPRNG was started.
-#               Name this function `estimate_start_time` as below.
-# Hint: the start time was X minutes ago. You can get the current unix timestamp
-#       with int(time.time())
-# Hint: you want to keep running the lottery until the minute changes.
+# STUDENT TASK 1: Implement a function to detect the lottery minute changing,
+#                 and return the new minute.
+# Hint: run run_lottery() in a loop until run_lottery()["minute"] changes.
 ################################################################################
 
-# def estimate_start_time():
-#   # @TODO: Student.
-
-def estimate_start_time():
-  observations = []
-  minute_has_changed = False
-  while not minute_has_changed:
-    observation = hex_lottery()
-    minute_has_changed = (len(observations) > 0 and observation["minute"] != observations[-1]["minute"])
-    observations.append(observation)
+def detect_changing_minute():
+  original_minute = run_lottery()["minute"]
+  while True:
+    current_minute = run_lottery()["minute"]
+    if current_minute != original_minute:
+      return current_minute
     time.sleep(1.0)
 
-  tick_count_estimate = observations[-1]["minute"] * 60
-  start_time_estimate = int(time.time()) - tick_count_estimate
+current_minute = detect_changing_minute()
 
-  print(tick_count_estimate, start_time_estimate)
-  return tick_count_estimate, start_time_estimate, [observation["result"].u32 for observation in observations]
+# We're now an exact number of minutes since the lottery began, albeit with some
+# amount of random error. The challenge now is determine the exact seed the
+# lottery used.
 
-def seed_fits_observations(seed, estimated_ticks, observations):
-  csprng = exercise2.Csprng(seed)
-  matches = 0
-  previous_match_location = 0
-  for i in range(estimated_ticks + 3):
-    value = csprng.get_current_value()
-    #print "'" + value + "'"
-    try:
-      observed_i = observations.index(value)
-    except ValueError:
-      observed_i = False
-    if observed_i:# and observed_i >= previous_match_location and observed_i <= i:
-      matches += 1
-    csprng.tick()
-  return float(matches) / float(len(observations))
+################################################################################
+# STUDENT TASK: Implement a function to return the approximate unix time that
+#               the lottery began.
+# Hint: you're provided with the current minute of the lottery.
+# Hint: unix time is the number of seconds since 00:00:00 on January 1st, 1970.
+# Hint: you can get the current unix time with int(time.time())
+################################################################################
 
-tick_count_estimate, start_time_estimate, observations = estimate_start_time()
+def estimate_start_unixtime(current_minute):
+  return int(time.time()) - current_minute * 60
 
-# We know now how many ticks have taken place. Each tick is designed to take about 1
-# second, but that's probably not exact. You might find ticks happen on average a
-# little over 1s, because of the time to schedule the next tick.
+start_unixtime_estimate = estimate_start_unixtime(current_minute)
+
+# We now know the seed the lottery used, *assuming* clock drift and our imprecise
+# measurements didn't cause any error. Unfortunately that's unlikely to be true.
+# A more sophisticated implementation could minimise the issue, but it is easier
+# for us to try all seeds within a few seconds of our estimate.
+
+# We now have a good estimate of the unix time at which the lottery was started.
+# We also know from our insider that the lottery is seeded with the unix time
+# that it is turned on.
 #
-# So the challenge is finding the correct seed for the CSPRNG. This should be very
-# close to the current unix time minus the number of ticks. We can find this in two
-# ways:
-
-# But we do not know how much time
-# has elapsed.
+# Our approach is very imprecise and subject to lots of different errors:
+# * The lottery may not tick exactly once a second.
+# * Imprecise timing detecting the minute change.
+# * Clock drift.
+#
+# The challenge is to find the correct seed for the CSPRNG despite these errors.
+# At the worst we can expect our estimate to be within 4 of the true value.
+# But we'll have to try all those seeds to find one that works.
 
 ################################################################################
 # STUDENT TASK: Write a function to find the correct seed.
-#               Name this function `find_correct_seed` as below. You'll get your
-#               start time estimate as a parameter.
 # Hint: the correct seed should be within a few seconds of our guess.
 ################################################################################
 
-# def find_correct_seed(start_time_estimate):
-#   # @TODO: Student.
+def try_a_seed(seed, current_minute):
+  csprng = exercise2.Csprng(seed)
+  latest_lottery_result_int = run_lottery()["result"].u32
+  for i in range(0, current_minute * 60 + 120):
+    if csprng.get_current_value() == latest_lottery_result_int:
+      return True
+    csprng.tick()
+  return False
 
-offsets = [0, 1, -1, 2, -2, 3, -3, 4, -4, 5, -5, 6, -6, 7, -7, 8, -8, 9, -9, 10, -10, 11, -11]
-offset_observation_fits = [seed_fits_observations(start_time_estimate + i, tick_count_estimate + i, observations) for i in offsets]
-print(offset_observation_fits)
-max_observation_fit = max(offset_observation_fits)
-offset_with_max_fit = offsets[offset_observation_fits.index(max_observation_fit)]
+def find_correct_seed(start_unixtime_estimate, current_minute):
+  # @TODO: Student.
+  for offset in range(-10, 11):
+    offseted_start_unixtime_estimate = start_unixtime_estimate + offset
+    if try_a_seed(offseted_start_unixtime_estimate, current_minute):
+      return offseted_start_unixtime_estimate
+  return None
 
-tick_count_estimate += offset_with_max_fit
-start_time_estimate += offset_with_max_fit
-print(max_observation_fit, offset_with_max_fit, tick_count_estimate, start_time_estimate)
+start_unixtime_correct = find_correct_seed(start_unixtime_estimate, current_minute)
+
+################################################################################
+# You're done. If you've implemented correctly above, the exploit will work.
+# Try running this script,
+#   python3 break-lottery.py
+################################################################################
 
 # Tick the CSPRNG until it matches a new play.
-observation = hex_lottery()
-print("'" + str(observation["result"]) + "'")
-csprng = exercise2.Csprng(start_time_estimate)
-while csprng.get_current_value() != observation["result"].u32:
+observation = run_lottery()["result"].u32
+csprng = exercise2.Csprng(start_unixtime_correct)
+while csprng.get_current_value() != observation:
   csprng.tick()
 
 # Fastforwarding the CSPRNG to the time of line 73 might have taken awhile.
 # Thus fastforward again the much smaller amount between then and now.
 # After this we'll be pretty up to date. However measuring the time taken for
 # operations would be much better than this rough approach.
-observation = hex_lottery()
-print("'" + str(observation["result"]) + "'")
-while csprng.get_current_value() != observation["result"].u32:
+observation = run_lottery()["result"].u32
+while csprng.get_current_value() != observation:
   csprng.tick()
 
 print("Total cost of plays = ${:,}".format(total_cost_of_play))
