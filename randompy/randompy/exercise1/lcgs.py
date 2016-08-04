@@ -8,7 +8,7 @@ class LCG():
         self.param = lcg_param
         self.setseed(1)
 
-    def setseed(self, value):
+    def seed(self, value):
         self.state = value % self.param.modulus
         return self
 
