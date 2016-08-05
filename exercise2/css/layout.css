@@ -1,0 +1,87 @@
+body {
+  font: 15px "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.container {
+  width: 960px;
+  margin: 0 auto;
+}
+
+.shift-register, .feedback-shift-register, .lfsr {
+  margin: 0 auto;
+}
+
+h1 {
+  font-size: 35px;
+}
+
+hr {
+  border: 1px dotted lightblue;
+}
+
+.chart-collection {
+  overflow: hidden;
+  list-style: none;
+}
+.chart-collection li {
+  float: left;
+  margin-right: 20px;
+  display: block;
+  width: 200px;
+}
+.chart-collection label {
+  display: block;
+}
+.chart-image-zoom {
+  color: white;
+  font-weight: bold;
+  font-size: 24px;
+  width: 160px;
+  height: 160px;
+  padding: 20px;
+  text-shadow: 0px 0px 6px black;
+  background-position: center;
+}
+
+.numbers-frame-collection {
+  overflow: hidden;
+}
+
+.numbers-frame {
+  float: left;
+  width: 200px;
+  margin-right: 20px;
+  display: block;
+  position: relative;
+}
+
+.numbers-frame .label {
+  position: absolute;
+  left: 20px;
+  top: 20px;
+  color: white;
+  font-weight: bold;
+  font-size: 24px;
+  text-shadow: 1px 1px 6px black;
+  z-index: 1;
+}
+
+.numbers-frame pre {
+  font-size: 27px;
+  letter-spacing: 4px;
+  margin-top: 0;
+  background: black;
+  color: white;
+  text-align: right;
+  border: 1px dotted grey;
+  padding: 7px 20px 0;
+  height: 285px;
+  overflow: scroll;
+}
+
+.reveal {
+  display: none;
+}
+.reveal-tick {
+
+}
