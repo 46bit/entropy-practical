@@ -1,3 +1,6 @@
+#!/usr/bin/env bash
+
+# http://unix.stackexchange.com/a/55922
 trap 'killall' INT
 
 killall() {

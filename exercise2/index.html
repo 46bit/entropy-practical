@@ -33,11 +33,28 @@
     <p>This can be bad for the person relying on the embedded system. So we're going to try breaking one.</p>
 
     <h3>Task Instructions</h3>
-    <ol>
-      <li>On the Virtual Machine, browse to the <code>~/randomness/exercise2</code> directory and run <code>./hex-lottery</code>.<br> You'll be prompted to enter a guess - press Enter and it'll keep to the default <code>ffffffff</code>.<br> Now it'll play the game and you're overwhelming unlikely to win. There's a 1-in-4,294,967,295 chance of winning. </li>
-      <li>This seems kind of unfair to you. So you talked to your friend who builds Embedded Systems, and heard a rumour that the lottery is seeding their CSPRNG with the current unix timestamp when they start it up.</li>
-      <li>You've also noticed that the jackpot doubles every minute, and it helpfully tells you which minute of the lottery you're currently playing. Which, assuming the Embedded System clock is correct, lets you guess the seed!</li>
-      <li>If you open up <code>break-lottery.py</code>, there are instructions for how to go about this. Good luck!</li>
+    <p>On the Virtual Machine, browse to the <code>~/randomness/exercise2</code> directory and run <code>./hex-lottery</code>.</p>
+    <p>You'll be prompted to enter a guess - press Enter and it'll keep to the default <code>ffffffff</code>.</p>
+    <p>Now it'll play the game and you're overwhelming unlikely to win. There's a 1-in-4,294,967,295 chance of winning.</p>
+<pre>############################################
+***       THE HEXADECIMAL LOTTERY        ***
+***     Reward doubles every minute!     ***
+############################################
+
+*** This is MINUTE 5
+    It's $32 a play
+    For a $32768 jackpot!
+
+:: Which 8 symbols do you want to pick? [ffffffff]
+
+        7 6 5 4 3 2 1 0
+TO WIN  f f f f f f f f
+DRAWN   0 5 0 2 5 b a 3
+
+:: You didn't win! :-(</pre>
+    <p>This seems kind of unfair to you. So you talked to your friend who builds Embedded Systems, and heard a rumour that the lottery is seeding their CSPRNG with the current unix timestamp when they start it up.</p>
+    <p>You've also noticed that the jackpot doubles every minute, and it helpfully tells you which minute of the lottery you're currently playing. Which, assuming the Embedded System clock is correct, lets you guess the seed!</p>
+    <p>If you open up <code>break-lottery.py</code>, there are instructions for how to go about this. Good luck!</p>
     </ol>
     <hr>
   </div>
