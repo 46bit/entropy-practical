@@ -33,12 +33,8 @@ def run_lottery(attempt="ffffffff"):
 ################################################################################
 
 def detect_changing_minute():
-  original_minute = run_lottery()["minute"]
-  while True:
-    current_minute = run_lottery()["minute"]
-    if current_minute != original_minute:
-      return current_minute
-    time.sleep(1.0)
+  # @TODO: Implementation.
+  return changed_minute
 
 current_minute = detect_changing_minute()
 
@@ -55,7 +51,8 @@ current_minute = detect_changing_minute()
 ################################################################################
 
 def estimate_start_unixtime(current_minute):
-  return int(time.time()) - current_minute * 60
+  # @TODO: Implementation.
+  return start_unixtime_estimate
 
 start_unixtime_estimate = estimate_start_unixtime(current_minute)
 
@@ -92,14 +89,10 @@ def try_a_seed(seed, current_minute):
   return False
 
 def find_correct_seed(start_unixtime_estimate, current_minute):
-  # @TODO: Student.
-  for offset in range(-10, 11):
-    offseted_start_unixtime_estimate = start_unixtime_estimate + offset
-    if try_a_seed(offseted_start_unixtime_estimate, current_minute):
-      return offseted_start_unixtime_estimate
-  return None
+  # @TODO: Implementation.
+  return start_unixtime
 
-start_unixtime_correct = find_correct_seed(start_unixtime_estimate, current_minute)
+start_unixtime = find_correct_seed(start_unixtime_estimate, current_minute)
 
 ################################################################################
 # You're done. If you've implemented correctly above, the exploit will work.
@@ -109,7 +102,7 @@ start_unixtime_correct = find_correct_seed(start_unixtime_estimate, current_minu
 
 # Tick the CSPRNG until it matches a new play.
 observation = run_lottery()["result"].u32
-csprng = exercise2.Csprng(start_unixtime_correct)
+csprng = exercise2.Csprng(start_unixtime)
 while csprng.get_current_value() != observation:
   csprng.tick()
 
