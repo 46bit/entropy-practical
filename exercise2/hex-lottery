@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os, sys, readchar, random, time, socket, string, struct
-from randompy import exercise2
+from cp_randomness import exercise2
 
 shell_is_interactive = os.isatty(sys.stdout.fileno())
 

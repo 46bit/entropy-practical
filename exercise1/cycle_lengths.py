@@ -1,4 +1,4 @@
-from randompy.exercise1 import LCG, LCGS
+from cp_randomness.exercise1 import LCG, LCGS
 
 def find_cycle_length(lcg):
     # Hint: you want to count how long until the first output comes up again.

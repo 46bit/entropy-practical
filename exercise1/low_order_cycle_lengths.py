@@ -1,4 +1,4 @@
-from randompy.exercise1 import LCG, LCGS
+from cp_randomness.exercise1 import LCG, LCGS
 
 # Implement find_low_bits_cycle using the hints it contains.
 # To run this file and see your calculated cycle lengths, run
@@ -20,6 +20,7 @@ def find_low_bits_cycle(low_bit_count, lcg):
     for i in range(0, lcg.param.modulus):
         if new_lcg.next() & mask != lcg_from_output.next() & mask:
             # This isn't a low-order-bit cycle.
+            break
 
     # Calculate the cycle length of the low order bits and return it as an integer.
     return lob_cycle_length

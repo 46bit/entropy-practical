@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import os, sys, time, subprocess, re
-from randompy import exercise2
+from cp_randomness import exercise2
 
 # Note: This runs the lottery and returns
 total_cost_of_play = 0

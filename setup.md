@@ -3,18 +3,11 @@ In time this will be on the virtual machine. For now there's just a few things t
 
 ## Python Package Installation
 ```
-cd Tyche
-easy_install .
+pip3 install Tyche
+pip3 install cp_randomness
 ```
 
-**We use Python 3 for this.** If your system defaults to Python 2, you might need to run `easy_install3 .` or `easy_install-3.5 .` or something like that.
-
-```
-cd ../randompy
-easy_install .
-```
-
-This should have installed all the packages you need.
+**This uses Python 3.** If your system defaults to Python 2, you might need to use something like `easy_install3` or `easy_install-3.5`.
 
 ## Run the servers
 ```

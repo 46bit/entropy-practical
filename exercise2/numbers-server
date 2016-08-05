@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 import sys, random, time, socket, struct, threading
-from randompy import exercise2
+from cp_randomness import exercise2
 
 class NumberServerThread(threading.Thread):
   def __init__(self, csprng_wrapper):

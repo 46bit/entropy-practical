@@ -3,7 +3,7 @@
 # python cycle_lengths_test.py
 
 import sys, unittest, bcrypt
-from randompy.exercise1 import LCG, LCGS
+from cp_randomness.exercise1 import LCG, LCGS
 
 # For new Python:
 #from pathlib import Path
