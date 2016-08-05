@@ -1,16 +1,13 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Exercise 2</title>
+  <title>Exercise 2: Exploiting Pseudo-random Number Generators</title>
   <link rel="stylesheet" href="css/layout.css">
-  <script src="js/jquery-3.0.0.min.js"></script>
-  <script src="js/layout.js"></script>
-  <script src="js/numbers-frame.js"></script>
 </head>
 <body>
   <div class="container">
-    <h2>Exercise 2</h2>
-    <h1>Bad seeding of a Cryptographically Secure Pseudo-random Number Generator</h1>
+    <h2 style="margin-bottom: 0;">Exercise 2</h2>
+    <h1 style="margin-top: 5px;">Exploiting Pseudo-random Number Generators</h1>
     <p><b>So you've looked into simple PRNGs in the last exercise. How to find patterns. What you need to understand is that all of these - LCGs, Mersenne Twister (as used for <code>random</code> in most programming languages you use) - are quite easy to predict the next value of when you're skilled.</b></p>
     <hr>
 
@@ -30,12 +27,12 @@
     </ul>
     <hr>
 
-    <h2>Breaking a CSPRNG</h2>
+    <h2>Seeding a CSPRNG badly</h2>
     <p>But on a little Embedded System, you don't have much of an operating system. You don't necessarily have user input or audio inputs or anything to seed a CSPRNG with without figuring it out yourself. So you might use what you have - a real-time clock - and seed a CSPRNG with that.</p>
     <p>Now it's still true that nobody can reverse your CSPRNG outputs into the internal state. But if someone knew the value of your real-time clock when you switched on the CSPRNG, they can figure out what the first output was. And the second. And every output.</p>
     <p>This can be bad for the person relying on the embedded system. So we're going to try breaking one.</p>
 
-    <h3>Instructions</h3>
+    <h3>Task Instructions</h3>
     <ol>
       <li>On the Virtual Machine, browse to the <code>~/randomness/exercise2</code> directory and run <code>./hex-lottery</code>.<br> You'll be prompted to enter a guess - press Enter and it'll keep to the default <code>ffffffff</code>.<br> Now it'll play the game and you're overwhelming unlikely to win. There's a 1-in-4,294,967,295 chance of winning. </li>
       <li>This seems kind of unfair to you. So you talked to your friend who builds Embedded Systems, and heard a rumour that the lottery is seeding their CSPRNG with the current unix timestamp when they start it up.</li>
