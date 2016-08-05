@@ -1,0 +1,204 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>4. Conclusion &mdash; random 0.1.0b documentation</title>
+    
+    <link rel="stylesheet" href="_static/classic.css" type="text/css" />
+    <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+    
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    './',
+        VERSION:     '0.1.0b',
+        COLLAPSE_INDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="_static/jquery.js"></script>
+    <script type="text/javascript" src="_static/underscore.js"></script>
+    <script type="text/javascript" src="_static/doctools.js"></script>
+    <link rel="top" title="random 0.1.0b documentation" href="index.html" />
+    <link rel="prev" title="3. Extension Challenge" href="extension.html" />
+  <script type="text/javascript" src="_static/numbers-colourmap.js"></script>
+  <script type="text/javascript" src="_static/numbers-noise-plot.js"></script>
+  <script type="text/javascript" src="_static/numbers-noise-coord-plot.js"></script>
+  <!--<script type="text/javascript" src="_static/three.min.js"></script>
+  <script type="text/javascript" src="_static/OrbitControls.js"></script>
+  <script type="text/javascript" src="_static/numbers-phase-space-plot.js"></script>
+  <script type="text/javascript" src="_static/numbers-xyz-plot.js"></script>-->
+
+  </head>
+  <body role="document">
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="extension.html" title="3. Extension Challenge"
+             accesskey="P">previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">random 0.1.0b documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body" role="main">
+            
+  <div class="section" id="conclusion">
+<span id="ref-conclusion"></span><h1>4. Conclusion<a class="headerlink" href="#conclusion" title="Permalink to this headline">¶</a></h1>
+<div class="section" id="summary-important-points">
+<span id="ref-summary"></span><h2>4.1. Summary: Important Points<a class="headerlink" href="#summary-important-points" title="Permalink to this headline">¶</a></h2>
+<p>On the subject of function timing, timing several executions of the same function is often
+helpful in eliminating system noise. However, do not assume that taking an average of the
+timings is useful. Often it is simplest to take the minimum of a set of timings
+as representative. It is possible to switch off garbage collection in Python while timing
+functions, but this doesn&#8217;t remove all other system noise from the measurement.</p>
+<p>There are often two issues related to errors: knowing what error has taken place and sidechannels
+such as timing that allow an attacker to guess the error. The code that implements <code class="docutils literal"><span class="pre">pwcheck()</span></code> deals
+with the first of these, its header includes:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="c1">#ifdef DEBUG</span>
+    <span class="c1">#define ERROR_NAME_SHORT 1</span>
+    <span class="c1">#define ERROR_NAME_CHARS 2</span>
+    <span class="c1">#define ERROR_PW_SHORT 3</span>
+    <span class="c1">#define ERROR_PW_CHARS 4</span>
+    <span class="c1">#define ERROR_PW_LEN 5</span>
+    <span class="c1">#define ERROR_PW_WRONG 6</span>
+<span class="c1">#else</span>
+    <span class="c1">#define ERROR_NAME_SHORT 1</span>
+    <span class="c1">#define ERROR_NAME_CHARS 1</span>
+    <span class="c1">#define ERROR_PW_SHORT 1</span>
+    <span class="c1">#define ERROR_PW_CHARS 1</span>
+    <span class="c1">#define ERROR_PW_LEN 1</span>
+    <span class="c1">#define ERROR_PW_WRONG 1</span>
+<span class="c1">#endif</span>
+</pre></div>
+</div>
+<p>The unit test for the code must be able to ensure that all these errors are correctly discovered, so
+when DEBUG is set a different error code is reported for each type of error. However, when the software
+is deployed only a single error type is reported for any error.</p>
+<p>Unfortunately this software is not as careful about timing and testing a single character at a time signals
+where in the string the password is in error, allowing the possibility of discovering a password one character
+at a time. There are two common approaches to resolving this problem; the simplest is to ensure that every test
+takes the same time regardless of the input. This is easy to achieved in an approximate sense - e.g. every
+password is hashed even if it does not meet the character policy - but less easy to achieve in the internal
+calculations of the algorithm, as noted below for cryptography.</p>
+<p>The second option is to confuse an attacker by adding random amounts of time to the execution of critical
+functions. Since the time needs to be greater than the variance in the underlying process perhaps a
+pragmatic approach is to try to ensure that execution times are approximately equal and then add random
+fluctuations.</p>
+<p>A difficulty with padding to a fixed time or random blinding is ensuring that any fake times are not observable,
+for example if the attacker is able to observer a quiescant system due to padding with <code class="docutils literal"><span class="pre">sleep()</span></code>.</p>
+<p>The simple timing attack used here should not be feaisble against a practical password system but such
+techniques have been used against locks and some protocols, and they are an important part of an attacker&#8217;s
+discovery strategy for injection attacks against databases.</p>
+<p>A close relation to these attacks are more sophisticated side-channel attacks against cryptographic algorithms.
+Consider this function, a common element of public key systems:</p>
+<div class="math">
+<p><img src="_images/math/442817a8ffb0803793bbc33b6621dc87507352a7.png" alt="y = A^x mod B"/></p>
+</div><p>The obvous implementation approach is to repeatedly square A mod B and if the relevant bit is set in x to multiply
+this value into a result:</p>
+<div class="highlight-default"><div class="highlight"><pre><span></span><span class="n">res</span> <span class="o">=</span> <span class="mi">1</span>
+<span class="k">while</span> <span class="n">x</span><span class="p">:</span>
+    <span class="k">if</span> <span class="n">x</span> <span class="o">&amp;</span> <span class="mi">1</span><span class="p">:</span>
+       <span class="n">res</span> <span class="o">=</span> <span class="p">(</span><span class="n">res</span> <span class="o">*</span> <span class="n">A</span><span class="p">)</span> <span class="o">%</span> <span class="n">B</span>
+    <span class="n">A</span> <span class="o">=</span> <span class="p">(</span><span class="n">A</span> <span class="o">*</span> <span class="n">A</span><span class="p">)</span> <span class="o">%</span> <span class="n">B</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">x</span> <span class="o">&gt;&gt;</span> <span class="mi">1</span>
+</pre></div>
+</div>
+<p>Each loop of the function squares A but peforms the second mod multiply only if a bit is set in x. An attacker
+able to somehow observe information associated with the multiplications (power, radio etc) will be able
+to determin how many bits are set in x, or perhaps even which bits are set. Vulnerabilities of this sort are proving
+difficult to defend if attackers have near physical access to devices such as mobile computers and smart-cards.</p>
+</div>
+<div class="section" id="further-reading-and-references">
+<span id="ref-reading"></span><h2>4.2. Further Reading and References<a class="headerlink" href="#further-reading-and-references" title="Permalink to this headline">¶</a></h2>
+<p>This book covers a whole range of issues starting with basic hardware and algorithms and working
+toward what can be discovered from network protocols.  It is written in an unusual and very engaging style:</p>
+<blockquote>
+<div><p>Zalewski, Michal. Silence on the wire: a field guide to passive reconnaissance and indirect
+attacks. No Starch Press, 2005.</p>
+<blockquote>
+<div><em>&#8221;... just about any process involving information has inherrent security implications, which are
+visible to us the moment we look beyond the scope of the goal the process tries to achieve. The
+art of understanding security is simply being able to cross the line and look from a different
+perspective.&#8221;</em></div></blockquote>
+</div></blockquote>
+<p>This surveys the problem of leakage from cryptographic algorithms:</p>
+<blockquote>
+<div><p>Koeune, François, and François-Xavier Standaert. &#8220;A tutorial on physical security and side-channel attacks.&#8221;
+In <em>Foundations of Security Analysis and Design III</em>, pp. 78-108. Springer Berlin Heidelberg, 2005.</p>
+<blockquote>
+<div><em>&#8220;A recent branch of cryptography focuses on the physical constraints that a real-life cryptographic device
+must face, and attempts to exploit these constraints (running time, power consumption, . . . ) to expose
+the device&#8217;s secrets. This gave birth to implementation-specific attacks, which often turned out to be
+much more efficient than the best known cryptanalytic attacks ...&#8221;</em></div></blockquote>
+</div></blockquote>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar" role="navigation" aria-label="main navigation">
+        <div class="sphinxsidebarwrapper">
+  <h3><a href="index.html">Table Of Contents</a></h3>
+  <ul>
+<li><a class="reference internal" href="#">4. Conclusion</a><ul>
+<li><a class="reference internal" href="#summary-important-points">4.1. Summary: Important Points</a></li>
+<li><a class="reference internal" href="#further-reading-and-references">4.2. Further Reading and References</a></li>
+</ul>
+</li>
+</ul>
+
+  <h4>Previous topic</h4>
+  <p class="topless"><a href="extension.html"
+                        title="previous chapter">3. Extension Challenge</a></p>
+  <div role="note" aria-label="source link">
+    <h3>This Page</h3>
+    <ul class="this-page-menu">
+      <li><a href="_sources/conclusion.txt"
+            rel="nofollow">Show Source</a></li>
+    </ul>
+   </div>
+<div id="searchbox" style="display: none" role="search">
+  <h3>Quick search</h3>
+    <form class="search" action="search.html" method="get">
+      <div><input type="text" name="q" /></div>
+      <div><input type="submit" value="Go" /></div>
+      <input type="hidden" name="check_keywords" value="yes" />
+      <input type="hidden" name="area" value="default" />
+    </form>
+</div>
+<script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related" role="navigation" aria-label="related navigation">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="extension.html" title="3. Extension Challenge"
+             >previous</a> |</li>
+        <li class="nav-item nav-item-0"><a href="index.html">random 0.1.0b documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer" role="contentinfo">
+        &copy; Copyright 2016, Howard Chivers.
+      Created using <a href="http://sphinx-doc.org/">Sphinx</a> 1.4.4.
+    </div>
+  </body>
+</html>

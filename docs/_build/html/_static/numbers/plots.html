@@ -1,0 +1,23 @@
+<html>
+<head>
+  <script type="text/javascript" src="../jquery.js"></script>
+  <script type="text/javascript" src="../numbers-noise-plot.js"></script>
+  <script type="text/javascript" src="../numbers-noise-coord-plot.js"></script>
+  <script type="text/javascript" src="../three.min.js"></script>
+  <script type="text/javascript" src="../OrbitControls.js"></script>
+  <script type="text/javascript" src="../numbers-phase-space-plot.js"></script>
+  <script type="text/javascript" src="../numbers-xyz-plot.js"></script>
+</head>
+<body>
+  <h2>Value plot</h2>
+  <canvas class="numbers-noise-plot" id="numbers-noise-naturals" width="600" height="600" data-plot-name="Natural numbers" data-numbers-path="65536-randu.txt"></canvas>
+
+  <h2>Coordinate plots (x, y) = (output i, output i+1):</h2>
+  <canvas class="numbers-noise-coord-plot" id="numbers-noise-coord-naturals" width="600" height="600" data-plot-name="Natural numbers" data-numbers-path="65536-randu.txt"></canvas>
+
+  <h2>3D phase space (delayed coordinate) plots:</h2>
+  <div class="numbers-phase-space-plot" id="numbers-phase-space-naturals" style="width: 600px; height: 600px;" data-plot-name="Natural numbers" data-numbers-path="65536-lcg.txt"></div>
+
+  <h2>Coordinate plots (x, y, z) = (output i, output i+1, output i+2):</h2>
+  <div class="numbers-xyz-plot" id="numbers-xyz-naturals" style="width: 600px; height: 600px;" data-plot-name="Natural numbers" data-numbers-path="65536-randu.txt"></div>
+</html>
