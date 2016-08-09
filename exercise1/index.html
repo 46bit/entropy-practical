@@ -270,6 +270,7 @@ X<sub>4</sub> = 65473&times;12097 + 0 (mod 65536) =  792026881 (mod 65536) = 243
 
     <h2>Why do some of these sequences look more random than others?</h2>
     <p>A good pseudorandom sequence cannot be distinguished from a truly random sequence. As you've seen above, there are many different ways to analyse the statistical properties of a sequence. We've deliberately focused on ones that can be visualised. You're about to implement two more that are quite relevant to LCGs.</p>
+
     <h3>Task 1: Cycle lengths</h3>
     <p>You may have noticed on D's intensity chart (the top one) that there's a small pattern repeated many times. B also seems to repeat, but a little less regularly. In fact, all these generators produce sequences that will repeat eventually. A given output value will eventually be produced again, at which point the value after will also repeat. Thus the entire sequence cycles.</p>
     <p>Your task is to write a Python function to count the cycle length of each generator. Count how long it is until the first output value appears again.</p>
