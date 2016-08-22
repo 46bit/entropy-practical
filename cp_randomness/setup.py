@@ -12,7 +12,7 @@ from setuptools import setup
 setup(
     name='cp_randomness',
 
-    version='0.1.0',
+    version='0.1.2',
 
     description='cp_randomness Randomness and PRNG Experiment',
 

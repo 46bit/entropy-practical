@@ -19,6 +19,10 @@ hr {
   border: 1px dotted lightblue;
 }
 
+p {
+  line-height: 140%;
+}
+
 .chart-collection {
   overflow: hidden;
   list-style: none;

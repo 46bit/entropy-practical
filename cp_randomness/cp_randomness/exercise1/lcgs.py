@@ -4,17 +4,20 @@ from collections import namedtuple
 LcgParamTuple = namedtuple('Params', 'multiplier modulus increment')
 
 class LCG():
-    def __init__(self, lcg_param):
+    def __init__(self, lcg_param, seed=1):
         self.param = lcg_param
-        self.seed(1)
-
-    def seed(self, value):
-        self.state = value % self.param.modulus
-        return self
+        self.seed = seed
+        # Seeding.
+        self.state = seed % self.param.modulus
 
     def next(self):
         self.state = (self.param.multiplier * self.state + self.param.increment) % self.param.modulus
         return self.state
+
+    def advance(self, offset):
+        for i in range(0, offset):
+            self.next()
+        return self
 
 # LCG_PARAMS is a list of parameters for Linear Congruential Generators, matching up with those on
 # Exercise 1's documentation.

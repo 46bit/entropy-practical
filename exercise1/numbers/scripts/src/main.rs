@@ -112,6 +112,18 @@ fn main() {
     let mut s = String::from("");//format!("cycle_length={}\n", cycle_length));
     s.push_str(&*sv.join("\n"));
     f.write_all(s.as_bytes()).unwrap();
+
+    let path = format!("../a={}-m={}-c={}-binary-b.txt", a, m, c);
+    let ref mut f = File::create(&Path::new(&path)).unwrap();
+    let mut sv = vec![];
+    sv.push("bit0,bit1,bit2,bit3,bit4,bit5,bit6,bit7,bit8,bit9,bit10,bit11,bit12,bit13,bit14,bit15");
+    for i in 1..24 {
+        let output16 = outputs[i] as u16;
+        sv.push(format!("{:01b},{:01b},{:01b},{:01b},{:01b},{:01b},{:01b},{:01b},{:01b},{:01b},{:01b},{:01b},{:01b},{:01b},{:01b},{:01b}", output16 & 0x1, output16 & 0x2, output16 & 0x4, output16 & 0x8, output16 & 0x10, output16 & 0x20, output16 & 0x40, output16 & 0x80, (output16 >> 1) & 0x80, (output16 >> 2) & 0x80, (output16 >> 3) & 0x80, (output16 >> 4) & 0x80, (output16 >> 5) & 0x80, (output16 >> 6) & 0x80, (output16 >> 7) & 0x80, (output16 >> 8) & 0x80));
+    }
+    let mut s = String::from("");//format!("cycle_length={}\n", cycle_length));
+    s.push_str(&*sv.join("\n"));
+    f.write_all(s.as_bytes()).unwrap();
 }
 
 fn find_mask_cycle(mask: u32, a: u32, m: u32, c: u32, cycle_length: u32, run_in: u32, outputs: Vec<u32>) -> u32 {

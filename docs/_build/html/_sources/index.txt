@@ -13,9 +13,3 @@ Cyber-Practicals: Exploiting Random Number Generation
 
     introduction
     worksheet
-    extension
-    conclusion
-
-
-
-

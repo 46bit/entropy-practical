@@ -28,7 +28,10 @@ def find_low_bits_cycle(low_bit_count, lcg):
         matches = True
         for j in range(1, lcg.param.modulus + 1):
             # @TODO: By student.
-            pass
+            #pass
+            if offset_lcg.next() & mask != unoffset_lcg.next() & mask:
+                matches = False
+                break
 
         if matches:
             lob_cycle_length = offset

@@ -272,21 +272,33 @@ X<sub>4</sub> = 65473&times;12097 + 0 (mod 65536) =  792026881 (mod 65536) = 243
     <p>A good pseudorandom sequence cannot be distinguished from a truly random sequence. As you've seen above, there are many different ways to analyse the statistical properties of a sequence. We've deliberately focused on ones that can be visualised. You're about to implement two more that are quite relevant to LCGs.</p>
 
     <h3>Task 1: Cycle lengths</h3>
-    <p>You may have noticed on D's intensity chart (the top one) that there's a small pattern repeated many times. B also seems to repeat, but a little less regularly. In fact, all these generators produce sequences that will repeat eventually. A given output value will eventually be produced again, at which point the value after will also repeat. Thus the entire sequence cycles.</p>
-    <p>Your task is to write a Python function to count the cycle length of each generator. Count how long it is until the first output value appears again.</p>
-    <p><b>@TODO: direct people to <code>exercise1/cycle_lengths.py</code>.</b></p>
+    <p>You may have noticed on D's intensity chart (the top one) that there's a small pattern repeated many times. B also seems to repeat, but a little less regularly. In fact, <b>all these generators produce sequences that will repeat eventually.</b> A given output value will eventually be produced again, at which point the value after will also repeat. Thus the entire sequence cycles.</p>
+    <p style="margin-left: 20px;">Your task is to write a Python function to count the cycle length of each generator.<br>
+    Count how long it is until the first output value appears again.<br>
+    Get started in <b><code>exercise1/cycle_lengths.py</code></b>.<br>
+    You can run that program using <code>python3 exercise1/cycle_lengths.py</code>.<br>
+    You can run <code>python3 exercise1/cycle_lengths_test.py</code> to check your answers</p>
     <p>Compare your cycle lengths with the top diagrams. Do you see how the ones with small visible patterns tend to have short cycle lengths?</p>
 
     <h3>Task 2: Low bit cycle lengths</h3>
-    <p>As you saw from the binary outputs, many of these generators have clear patterns in the lower bits. These patterns have cycles <i>far</i> shorter than the overall cycle length. To use generator A as an example again:</p>
-    <pre style="font-size: 16px;">X<sub>n+1</sub> = 65473X<sub>n</sub> + 0 (mod 65536)</pre>
-    <p>We're seeding with an odd value, 1. Thus <b><code>X<sub>1</sub> = odd&times;odd (mod even)</code></b>. Consider that multiplying odd numbers together gives an odd number, and that an odd number minus an even number is odd. You should see why all the values in the sequence will be odd and therefore have a least significant bit of 1.</p>
-    <p>The objective in this task is to calculate the cycle length of just the lower few bits of each output. This is trickier than the cycle length of the entire output: you know the low-bit cycle length must be less-than-or-equal-to the overall cycle length, but until you've observed the cycle repeating up to the overall cycle length you can't be sure you have found a cycle.</p>
-    <p>So whenever you hit the same value of bits as you started with, run the full start and new outputs forward in the same generator and see if they match up to the full cycle length.</p>
-    <p><b>@TODO: direct people to <code>exercise1/low_order_cycle_lengths.py</code>.</b></p>
+    <p>I hope you noticed in the low-bit outputs that these generators show some strong patterns in their lower bits. Our objective now is to measure this by computing the cycle length for the lower few bits.</p>
+    <p>The way to do this is to see if the first output is repeated 100,000 times. Then see if the first two outputs are then repeated for that long. Then the first three, ... and onwards until you have a sequence that is repeated.</p>
+    <p>Say we have the sequence <code>67, 37, 7, ...</code>. You can extract the lower 3 bits using <code>output<sub>x</sub> & 0x7</code>. That low-bit sequence looks like <code>3, 5, 7, 3, 5, 7, ...</code>. Try sequence lengths from 1 upwards:</p>
+    <ol>
+      <li>Is the second output 1? Nope. So the cycle length isn't 1.</li>
+      <li>Is the third output 3 and the fourth output 5? Nope. So the cycle length isn't 2.</li>
+      <li>Is the fourth output 3, the fifth output 5 and the sixth output 7? Yep.<br>
+          Check this pattern up until the cycle length of the full output, or the 100,000th output to be sure.</li>
+    </ol>
+
+    <p style="margin-left: 20px;">Your task is to write a Python function to count the cycle length of each generator.<br>
+    Count how long it is until the first output value appears again.<br>
+    Get started in <b><code>exercise1/low_order_cycle_lengths.py</code></b>.<br>
+    You can run that program using <code>python3 exercise1/low_order_cycle_lengths.py</code>.<br>
+    You can run <code>python3 exercise1/low_order_cycle_lengths_test.py</code> to check your answers</p>
     <hr>
 
-    <h3>Continue to <a href="http://localhost:3002">Exercise 2</a></h3>
+    <h2>Continue to <a href="http://localhost:3002">Exercise 2</a></h2>
   </div>
 </body>
 </html>
