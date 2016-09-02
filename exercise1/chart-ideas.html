@@ -59,9 +59,22 @@ for (var i in urls) {
           continue
         }
         ints.push(parseInt(datum) & 0x7)//(parseFloat(datum) / 65536) * 100)
-        denary[0].push(parseInt(datum) & 0x1)
-        denary[1].push((parseInt(datum) & 0x2))// + 0x1)
-        denary[2].push((parseInt(datum) & 0x4))// + 0x3)
+
+        var b0 = parseInt(datum) & 0x1
+        var b1 = parseInt(datum) & 0x2
+        var b2 = parseInt(datum) & 0x4
+
+        var a0 = b0 ? 1 : 0
+        var a1 = b1 ? 2 - b0 : 0
+        var a2 = b2 ? 4 - a1 - a0 : 0
+
+        denary[0].push(a0)
+        denary[1].push(a1)
+        denary[2].push(a2)
+
+        //denary[0].push(Math.max(parseInt(datum) & 0x1, 0))
+        //denary[1].push(Math.max((parseInt(datum) & 0x2) - (parseInt(datum) & 0x1), 0))
+        //denary[2].push(Math.max((parseInt(datum) & 0x4) - (parseInt(datum) & 0x2) - (parseInt(datum) & 0x1), 0))
         //denary[3].push(parseInt(datum) & 0x8)
       }
       denaries.push(ints)

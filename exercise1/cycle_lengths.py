@@ -11,6 +11,6 @@ def find_cycle_length(lcg):
     return cycle_length
 
 if __name__ == "__main__":
-    for lcg_name in ["A", "B", "C", "D", "E", "F", "G", "H"]:
+    for lcg_name in ["A", "B", "C", "D"]:
         lcg = LCGS[lcg_name]
         print("LCG %s\n  %s\n  cycle_length=%d" % (lcg_name, lcg.param, find_cycle_length(lcg)))

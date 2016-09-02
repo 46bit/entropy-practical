@@ -24,14 +24,10 @@ class LCG():
 # N.B. To keep cycle calculation very simple, all parameters are chosen to have no run-in. That is,
 # the first outputted value is included in each cycle.
 LCG_PARAMS = {
-    "A": LcgParamTuple(65473, 65536, 0),
-    "B": LcgParamTuple(259, 65534, 0),
-    "C": LcgParamTuple(9562, 65522, 0),
-    "D": LcgParamTuple(1001, 2187, 8),
-    "E": LcgParamTuple(361, 450, 1),
-    "F": LcgParamTuple(71, 125, 1),
-    "G": LcgParamTuple(85, 65536, 1),
-    "H": LcgParamTuple(29305, 58564, 1)
+    "A": LcgParamTuple(259, 65534, 0),
+    "B": LcgParamTuple(361, 450, 1),
+    "C": LcgParamTuple(85, 65536, 1),
+    "D": LcgParamTuple(29305, 58564, 1)
 }
 
 LCGS = {}

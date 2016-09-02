@@ -61,52 +61,6 @@ show clear patterns when visualised. As there is an algorithm at work, sufficien
 to discover the underlying pattern and predict future/past values, but it should not be trivially
 obvious.
 
-In the following charts, a pseudorandom sequence should look like atmospheric noise on an untuned TV screen.
-
-.. note::
-   The relationship between each number in the sequence and how large they are.
-
-   .. raw:: html
-
-      <p style="font-size: 15px;"><code>point<sub>i</sub>= (x<sub>i</sub>, y<sub>i</sub>, intensity<sub>i</sub>) = (i mod width, i / width, output<sub>i</sub>)</code></p>
-
-   .. raw:: html
-
-         <canvas class="numbers-noise-plot" id="numbers-noise-primes" width=200" height="225" data-plot-name="Prime numbers" data-numbers-path="_static/numbers/65536-primes.txt" style="display: inline-block;"></canvas>
-         <canvas class="numbers-noise-plot" id="numbers-noise-prime-digits" width=200" height="225" data-plot-name="Primes mod 10" data-numbers-path="_static/numbers/65536-prime-digits.txt" style="display: inline-block;"></canvas>
-         <canvas class="numbers-noise-plot" id="numbers-noise-python-random-mersenne" width="200" height="225" data-plot-name="Mersenne Twister (Python)" data-numbers-path="_static/numbers/65536-python-random-mersenne.txt"></canvas>
-         <canvas class="numbers-noise-plot" id="numbers-noise-python-systemrandom" width=200" height="225" data-plot-name="High-quality PRNG (Yarrow)" data-numbers-path="_static/numbers/65536-python-systemrandom.txt"></canvas>
-
-   The primes grow over time, so there's a very clear smooth pattern. But the `primes mod 10` look really
-   good!
-
-.. note::
-   The relationship between a number and the successive number.
-
-   .. raw:: html
-
-      <p style="font-size: 15px;"><code>point<sub>i</sub>= (x<sub>i</sub>, y<sub>i</sub>, intensity<sub>i</sub>) = (output<sub>i</sub> mod width, output<sub>i+1</sub> mod height, i)</code></p>
-
-   .. raw:: html
-
-         <canvas class="numbers-noise-coord-plot" id="numbers-noise-coord-primes" width="200" height="225" data-plot-name="Prime numbers" data-numbers-path="_static/numbers/65536-primes.txt"></canvas>
-         <canvas class="numbers-noise-coord-plot" id="numbers-noise-coord-prime-digits" width="200" height="225" data-plot-name="Primes mod 10" data-numbers-path="_static/numbers/65536-prime-digits.txt"></canvas>
-         <canvas class="numbers-noise-coord-plot" id="numbers-noise-coord-python-random-mersenne" width="200" height="225" data-plot-name="Mersenne Twister (Python)" data-numbers-path="_static/numbers/65536-python-random-mersenne.txt"></canvas>
-         <canvas class="numbers-noise-coord-plot" id="numbers-noise-coord-python-systemrandom" width=200" height="225" data-plot-name="High-quality PRNG (Yarrow)" data-numbers-path="_static/numbers/65536-python-systemrandom.txt"></canvas>
-         <canvas class="numbers-noise-coord-plot" id="numbers-noise-coord-randu" width=200" height="225" data-plot-name="RANDU" data-numbers-path="_static/numbers/65536-randu.txt"></canvas>
-
-   Primes came out quite pretty, but we're not doing Number Theory. Our `primes mod 10` look far more
-   structured than in the previous plot. Why?
-
-   * Limited output range.
-      * Once past 10, `primes mod 10` can only end with 1, 3, 7 or 9.
-      * Each black box corresponds to a prime being followed by a prime ending with 1, 3, 7 or 9.
-      * The grey boxes indicate the opening (2, 3), (3, 5) and (5, 7) pairs.
-   * Besides those <10, the mappings happen almost evenly. `Number Theorists actively research this. <http://www.nature.com/news/peculiar-pattern-found-in-random-prime-numbers-1.19550>`_
-      * There are practical problems with using `primes mod 10` as a pseudorandom sequence, else it might
-        could work. Chief among these is the increasing computation time and memory usage for finding
-        larger and larger primes.
-
 _______________________________
 Pseudo-Random Number Generators
 _______________________________
@@ -123,8 +77,6 @@ Some store a few bytes of internal state, others have kilobytes. But their basic
 similarities.
 
 .. image:: _images/prng.svg
-
-.. image:: _images/prng-primedigit.svg
 
 The generator receives a seed value and transforms that into its internal state. For some PRNGs
 that might mean a sequence of bit operations, for others it might involve a step akin to encryption.
@@ -169,3 +121,7 @@ As is common in security teaching, the techniques described here could be used t
 attack systems but you must behave responsibly and ethically toward other people,
 their data and systems. The writing or use of tools to gain unauthorised access
 to systems is a criminal offence.
+
+-------
+
+`Go to Exercise 1 <http://localhost:3001>`_

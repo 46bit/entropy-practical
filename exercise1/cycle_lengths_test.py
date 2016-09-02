@@ -23,43 +23,23 @@ class LCGCycleLengthTest(unittest.TestCase):
         self.assertEqual(expectation, bcrypted_cycle_length)
 
     def test_a(self):
-        expectation = "$2b$14$6kv3i0cEBc7oSOXIdrsjquc66kOZM7.6XM6aINT7Hp0kk2fmq1TZ2"
+        expectation = "$2b$14$AYdQToXcR8oJTZw7DZvgGO9jU72HVsSlsuHljI89wUec46mR37lV2"
         cycle_length = find_cycle_length(LCGS["A"])
         self.bcrypt_cmp(expectation, cycle_length)
 
     def test_b(self):
-        expectation = "$2b$14$AYdQToXcR8oJTZw7DZvgGO9jU72HVsSlsuHljI89wUec46mR37lV2"
+        expectation = "$2b$14$wrB9bnwIlK21LVeDToiuq.I8nU4XHhp4kDTAmE5pZtmQyfZ2hvVSC"
         cycle_length = find_cycle_length(LCGS["B"])
         self.bcrypt_cmp(expectation, cycle_length)
 
     def test_c(self):
-        expectation = "$2b$14$H4sH1OjafANOmPdODmCGj.enbZPb8Yezfs3n13rn1k7iK0/cKblB6"
+        expectation = "$2b$14$buoqYdqykxUlC3yYVOdk1.m3EM3bgg4Qihyyg0m0.ZSaACiOhAeca"
         cycle_length = find_cycle_length(LCGS["C"])
         self.bcrypt_cmp(expectation, cycle_length)
 
     def test_d(self):
-        expectation = "$2b$14$yDDSQglGxtYSE4wUQV094u7ewL.O48Qpy4SyCKDUwEYCabMrMQXBG"
-        cycle_length = find_cycle_length(LCGS["D"])
-        self.bcrypt_cmp(expectation, cycle_length)
-
-    def test_e(self):
-        expectation = "$2b$14$wrB9bnwIlK21LVeDToiuq.I8nU4XHhp4kDTAmE5pZtmQyfZ2hvVSC"
-        cycle_length = find_cycle_length(LCGS["E"])
-        self.bcrypt_cmp(expectation, cycle_length)
-
-    def test_f(self):
-        expectation = "$2b$14$998iGLzdoWhAiqgJgxqGK.w3raYScYgaHALtuvhvtdsKv6A7mMP.K"
-        cycle_length = find_cycle_length(LCGS["F"])
-        self.bcrypt_cmp(expectation, cycle_length)
-
-    def test_g(self):
-        expectation = "$2b$14$buoqYdqykxUlC3yYVOdk1.m3EM3bgg4Qihyyg0m0.ZSaACiOhAeca"
-        cycle_length = find_cycle_length(LCGS["G"])
-        self.bcrypt_cmp(expectation, cycle_length)
-
-    def test_h(self):
         expectation = "$2b$14$x/v4ZI4/wpvefetwp.PtmuLr//.SMXHOCzl0.Er9B6jhDQgj7azky"
-        cycle_length = find_cycle_length(LCGS["H"])
+        cycle_length = find_cycle_length(LCGS["D"])
         self.bcrypt_cmp(expectation, cycle_length)
 
 unittest.main()

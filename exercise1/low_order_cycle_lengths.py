@@ -38,7 +38,7 @@ def find_low_bits_cycle(low_bit_count, lcg):
     return lob_cycle_length
 
 if __name__ == "__main__":
-    for lcg_name in ["A", "B", "C", "D", "E", "F", "G"]:
+    for lcg_name in ["A", "B", "C"]:
         lcg = LCGS[lcg_name]
         print("LCG %s\n  %s" % (lcg_name, lcg.param))
         for low_bit_count in range(1, 12):

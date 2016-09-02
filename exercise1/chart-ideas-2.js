@@ -1,15 +1,15 @@
 var margin = { top: 50, right: 0, bottom: 100, left: 50 },
     width = 3560 - margin.left - margin.right,
     height = 830 - margin.top - margin.bottom,
-    gridSize = Math.floor(1510 / 72),
+    gridSize = Math.floor(1510 / 50),
     legendElementWidth = gridSize*2,
     buckets = 2,
-    colors = ["#ffffd9","#edf8b1","#c7e9b4","#7fcdbb","#41b6c4","#1d91c0","#225ea8","#253494","#081d58"], // alternatively colorbrewer.YlGnBu[9]
+    colors = ["#3c943d","#ff7f0e","#1f77b4"],
     days = [],
     times = [],
-    datasets = ["numbers/a=85-m=65536-c=1-denary.txt", "numbers/65536-qrng.txt", "data2.tsv"];
+    datasets = ["numbers/a=259-m=65534-c=0-denary.txt", "numbers/a=361-m=450-c=1-denary.txt", "numbers/a=85-m=65536-c=1-denary.txt", "numbers/a=29305-m=58564-c=1-denary.txt"];
 
-var bits = 8
+var bits = 3
 
 for (var i = 0; i < bits; i++) {
   days.push("bit" + i)
@@ -30,7 +30,7 @@ var dayLabels = svg.selectAll(".dayLabel")
     .enter().append("text")
       .text(function (d) { return d; })
       .attr("x", 0)
-      .attr("y", function (d, i) { return i * gridSize * 2; })
+      .attr("y", function (d, i) { return i * gridSize * 1; })
       .style("text-anchor", "end")
       .attr("transform", "translate(-6," + gridSize / 1.5 + ")")
       .attr("class", function (d, i) { return "dayLabel mono axis axis-workweek"; });
@@ -39,7 +39,7 @@ var timeLabels = svg.selectAll(".timeLabel")
     .data(times)
     .enter().append("text")
       .text(function(d) { return d; })
-      .attr("x", function(d, i) { return i * gridSize; })
+      .attr("x", function(d, i) { return i * gridSize * 1.2; })
       .attr("y", 0)
       .style("text-anchor", "middle")
       .attr("transform", "translate(" + gridSize / 2 + ", -6)")
@@ -81,60 +81,31 @@ var heatmapChart = function(tsvFile) {
     cards.append("title")
 
     cards.enter().append("rect")
-      .attr("x", function(d) { return (d.i) * gridSize })
-      .attr("y", function(d) { return (bits - 1 - d.b) * gridSize * 2 })
+      .attr("x", function(d) { return (d.i) * gridSize * 1.2 })
+      .attr("y", function(d) { return d.b * gridSize * 1 })
       .attr("rx", 4)
       .attr("ry", 4)
       .attr("class", "hour bordered")
       .attr("width", gridSize)
       .attr("height", gridSize * 1)
-      .style("fill", colors[0])
+      .style("fill", function(d) { return d.value ? colors[d.b] : "white" })
 
-    cards.transition().duration(1000)
-      //.style("fill", function(d) { return colorScale(d.b) })
-      //.style("fill", function(d) { return colorScale(d.b % 10) })// d.value ? colorScale(d.b % 10) : "white" })
-      //.style("opacity", function(d) { return Math.max(d.value, 0.1) })
-      .style("fill", function(d) { return d.value ? colorScale(d.b % 10) : "white" })
-      .style("fill", function(d) { return d.value ? "black" : "white" })
-      //.style("opacity", function(d) { return Math.max(d.value, 0.1) })
+    cards.enter().append("text")
+      .attr("x", function(d) { return (d.i) * gridSize * 1.2 + gridSize / 2 })
+      .attr("y", function(d) { return d.b * gridSize * 1 + gridSize / 2 })
+      .attr("rx", 4)
+      .attr("ry", 4)
+      .attr("class", "hour bordered")
+      .text(function (d) { return d.value; })
+      .style("text-anchor", "middle")
 
     cards.select("title").text(function(d) { return d.value })
 
     cards.exit().remove()
   })
-
-  /*cards.transition().duration(1000)
-        .style("fill", function(d) { return colorScale(d.value); });
-
-    cards.select("title").text(function(d) { return d.value; });
-
-    cards.exit().remove();
-
-    var legend = svg.selectAll(".legend")
-        .data([0].concat(colorScale.quantiles()), function(d) { return d; });
-
-    legend.enter().append("g")
-        .attr("class", "legend");
-
-    legend.append("rect")
-      .attr("x", function(d, i) { return legendElementWidth * i; })
-      .attr("y", height)
-      .attr("width", legendElementWidth)
-      .attr("height", gridSize / 2)
-      .style("fill", function(d, i) { return colors[i]; });
-
-    legend.append("text")
-      .attr("class", "mono")
-      .text(function(d) { return "≥ " + Math.round(d); })
-      .attr("x", function(d, i) { return legendElementWidth * i; })
-      .attr("y", height + gridSize);
-
-    legend.exit().remove();
-
-  }(null, [[]]) //);*/
 };
 
-heatmapChart(datasets[0]);
+heatmapChart(datasets[3]);
 
 var datasetpicker = d3.select("#dataset-picker").selectAll(".dataset-button")
   .data(datasets);
