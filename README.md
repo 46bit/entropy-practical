@@ -1,20 +1,23 @@
 # Randomness Practical: Setup
-In time this will be on the virtual machine. For now there's just a few things to do before you start.
 
-**This uses Python 3.**
+## Requirements for this CyberPractical
 
-## Python Package Installation
+* Requires only one VM.
+
+@TODO: Systemd service for numbers server. Potentially also one for documentation (see below).
+
+## Setup on the CyberPracticals VM
+
+### Python Package Installation
+
 ```
 pip3 install Tyche/
 pip3 install cp_randomness/
 ```
 
-## Run the servers
-```
-./run.sh
-```
+### Documentation
 
-Leave this running in the background. `CTRL+C` will kill it and all the child processes when you're done.
+@TODO: fill out once decided whether to put everything in Sphinx or not.
 
 ## Get started
 Go to [The Introduction](http://localhost:3000).
