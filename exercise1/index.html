@@ -15,118 +15,73 @@
     <hr>
 
     <h2>Which of these look random to you?</h2>
-    <p>The relationship between each number in the sequence and how large they are.</p>
+    <p>The relationship between each number in the sequence and how large they are.<br>
+    If you spot patterns in the plot it's a very bad sign.</p>
     <ul class="chart-collection">
       <li>
         <div class="chart-image-zoom" style="background-image: url(numbers/a=259-m=65534-c=0-intensity.png);">A</div>
-        <label class="reveal-tick">
-          <input type="checkbox">
-          I see a pattern
-        </label>
         <p class="reveal">Definite patterns: this looks like a repeating barcode.</p>
       </li>
       <li>
         <div class="chart-image-zoom" style="background-image: url(numbers/a=361-m=450-c=1-intensity.png);">B</div>
-        <label class="reveal-tick">
-          <input type="checkbox">
-          I see a pattern
-        </label>
         <p class="reveal">The bands are some sort of structure.</p>
       </li>
       <li>
         <div class="chart-image-zoom" style="background-image: url(numbers/a=85-m=65536-c=1-intensity.png);">C</div>
-        <label class="reveal-tick">
-          <input type="checkbox">
-          I see a pattern
-        </label>
         <p class="reveal">This does look quite random.</p>
       </li>
       <li>
         <div class="chart-image-zoom" style="background-image: url(numbers/a=29305-m=58564-c=1-intensity.png);">D</div>
-        <label class="reveal-tick">
-          <input type="checkbox">
-          I see a pattern
-        </label>
         <p class="reveal">This does look quite random.</p>
       </li>
     </ul>
     <hr>
 
     <h2>How about now?</h2>
-    <p>The 5 least significant bits of each generator's output.</p>
+    <p>The 5 least significant bits of each generator's output.<br>
+    If you spot patterns going down each bit it's a very bad sign.</p>
     <ul class="numbers-frame-collection">
       <li class="numbers-frame" data-numbers-path="numbers/a=259-m=65534-c=0-binary.txt">
         <span class="label">A</span>
         <pre></pre>
-        <label class="reveal-tick">
-         <input type="checkbox">
-         I see a pattern
-        </label>
         <p class="reveal">The least bit is always 1.</p>
       </li>
       <li class="numbers-frame" data-numbers-path="numbers/a=361-m=450-c=1-binary.txt">
         <span class="label">B</span>
         <pre></pre>
-        <label class="reveal-tick">
-         <input type="checkbox">
-         I see a pattern
-        </label>
         <p class="reveal">The least bit alternates between 0 and 1.</p>
       </li>
       <li class="numbers-frame" data-numbers-path="numbers/a=85-m=65536-c=1-binary.txt">
         <span class="label">C</span>
         <pre></pre>
-        <label class="reveal-tick">
-         <input type="checkbox">
-         I see a pattern
-        </label>
         <p class="reveal">The least, 2nd least and 3rd least bits each repeat very quickly.</p>
       </li>
       <li class="numbers-frame" data-numbers-path="numbers/a=29305-m=58564-c=1-binary.txt">
         <span class="label">D</span>
         <pre></pre>
-        <label class="reveal-tick">
-         <input type="checkbox">
-         I see a pattern
-        </label>
         <p class="reveal">The least and 2nd least bits each repeat very quickly.</p>
       </li>
     </ul>
     <hr>
 
     <h2>And now?</h2>
-    <p>The relationship between a number and the successive number.</p>
+    <p>The relationship between a number and the successive number.<br>
+    If you spot patterns in the plot it's a very bad sign.</p>
     <ul class="chart-collection">
       <li>
         <div class="chart-image-zoom" style="background-image: url(numbers/a=259-m=65534-c=0-pairs.png);">A</div>
-        <label class="reveal-tick">
-          <input type="checkbox">
-          I see a pattern
-        </label>
         <p class="reveal">This really doesn't look random.</p>
       </li>
       <li>
         <div class="chart-image-zoom" style="background-image: url(numbers/a=361-m=450-c=1-pairs.png);">B</div>
-        <label class="reveal-tick">
-          <input type="checkbox">
-          I see a pattern
-        </label>
         <p class="reveal">Those straight lines don't look stereotypically random.</p>
       </li>
       <li>
         <div class="chart-image-zoom" style="background-image: url(numbers/a=85-m=65536-c=1-pairs.png);">C</div>
-        <label class="reveal-tick">
-          <input type="checkbox">
-          I see a pattern
-        </label>
         <p class="reveal">This is very uniform but it isn't random.</p>
       </li>
       <li>
         <div class="chart-image-zoom" style="background-image: url(numbers/a=29305-m=58564-c=1-pairs.png);">D</div>
-        <label class="reveal-tick">
-          <input type="checkbox">
-          I see a pattern
-        </label>
         <p class="reveal">This is quite complex but there are evident patterns.</p>
       </li>
     </ul>
@@ -135,7 +90,7 @@
     <h2>Linear Congruential Generators</h2>
     <p>The algorithm behind all these sequences is called the Linear Congruential Generator. It works by a simple recurrence relationship:</p>
     <p>
-<pre style="font-size: 24px;">X<sub>n+1</sub> = aX<sub>n</sub> + c (mod m)</pre>
+<pre style="font-size: 24px;">X<sub>n+1</sub> = (aX<sub>n</sub> + c) mod m</pre>
     </p>
     <p>So starting with a provided <b>seed <code>X<sub>0</sub></code></b> this generates a sequence,</p>
     <p>
@@ -143,23 +98,23 @@
     </p>
     <p>where</p>
     <p>
-<pre style="font-size: 20px;">X<sub>1</sub> = aX<sub>0</sub> + c (mod m)
-X<sub>2</sub> = aX<sub>1</sub> + c (mod m)
-X<sub>3</sub> = aX<sub>2</sub> + c (mod m)
+<pre style="font-size: 20px;">X<sub>1</sub> = (aX<sub>0</sub> + c) mod m
+X<sub>2</sub> = (aX<sub>1</sub> + c) mod m
+X<sub>3</sub> = (aX<sub>2</sub> + c) mod m
 &vellip;</pre>
     </p>
     <p>Each generator <code>A, &hellip;, H</code> has its own parameters <code>a</code>, <code>m</code> and <code>c</code>. You'll be provided with these to answer the questions that follow.</p>
 
     <p>Let's consider generator A. This has parameters <code>a = 65473, m = 65536, c = 0</code>.</p>
 
-<pre style="font-size: 16px;"><b>X<sub>n+1</sub> = 65473X<sub>n</sub> + 0 (mod 65536)</b></pre>
+<pre style="font-size: 16px;"><b>X<sub>n+1</sub> = (65473X<sub>n</sub> + 0) mod 65536</b></pre>
 
     <p>We set <code>X<sub>0</sub> = 1</code>. Now let's calculate things.</p>
 
-<pre style="font-size: 16px;">X<sub>1</sub> = 65473&times;1     + 0 (mod 65536) =      65473 (mod 65536) = 65473 = 0b1111111111000001
-X<sub>2</sub> = 65473&times;65473 + 0 (mod 65536) = 4286713729 (mod 65536) =  3969 = 0b0000111110000001
-X<sub>3</sub> = 65473&times;3969  + 0 (mod 65536) =  259862337 (mod 65536) = 12097 = 0b0010111101000001
-X<sub>4</sub> = 65473&times;12097 + 0 (mod 65536) =  792026881 (mod 65536) = 24321 = 0b0101111100000001</pre>
+<pre style="font-size: 16px;">X<sub>1</sub> = (65473&times;1     + 0) mod 65536 =      65473 mod 65536 = 65473 = 0b1111111111000001
+X<sub>2</sub> = (65473&times;65473 + 0) mod 65536 = 4286713729 mod 65536 =  3969 = 0b0000111110000001
+X<sub>3</sub> = (65473&times;3969  + 0) mod 65536 =  259862337 mod 65536 = 12097 = 0b0010111101000001
+X<sub>4</sub> = (65473&times;12097 + 0) mod 65536 =  792026881 mod 65536 = 24321 = 0b0101111100000001</pre>
     <hr>
 
     <h2>Why do some of these sequences look more random than others?</h2>
