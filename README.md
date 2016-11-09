@@ -1,5 +1,7 @@
 # Randomness Practical: Setup
 
+A practical to teach about Pseudo-Random Number Generators attacks (i.e., poor seeding, used of insecure algorithms). Part of the Cyber Security Practicals.
+
 ## Requirements for this CyberPractical
 
 * Requires only one VM.
