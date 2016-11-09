@@ -50,7 +50,7 @@ _______________________________
 Pseudo-Random Number Generators
 _______________________________
 
-.. image:: _images/prng.svg
+.. image:: images/prng.svg
 
 The generator receives a seed value and transforms that into its internal state. For some PRNGs
 that might mean a sequence of bit operations, for others it might involve a step akin to encryption.
